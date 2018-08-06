@@ -1,0 +1,85 @@
+@media screen and (max-width: 450px) {
+  nav h1 a {
+    letter-spacing: 0.2em;
+  }
+
+  #reviews-list li p.rating,
+  #reviews-list li p.date {
+    line-height: 1em;
+    font-size: 1em;
+    width: calc((100% - 2 * 1em) / 2);
+    min-width: 160px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  #restaurants-list li {
+    width: calc((100% - 2 * (3em + 4px)) / 2);
+  }
+
+  .filter-options h2 {
+    text-align: right;
+  }
+
+  .filter-options .form-control,
+  .filter-options h2 {
+    width: calc((100% - 3 * 40px) / 3);
+  }
+
+  #reviews-list li {
+    margin: 0.5em;
+    width: calc((100% - 2 * (2em + 4px) - 2em) / 2);
+  }
+
+  #maincontent {
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+  }
+
+  #restaurant-container,
+  .inside #map-container {
+    width: calc((100% - 2em) / 2);
+  }
+
+  .inside #map-container {
+    order: 1;
+    flex: 1 1 auto;
+    align-content: stretch;
+    height: auto;
+  }
+
+  .inside #map {
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+  }
+
+  #reviews-container {
+    order: 2;
+  }
+}
+
+@media screen and (min-width: 900px) {
+  #restaurants-list li {
+    width: calc((100% - 3 * (3em + 4px)) / 3);
+  }
+
+  #reviews-list li {
+    margin: 0.5em;
+    width: calc((100% - 3 * (2em + 4px) - 4em) / 3);
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  nav h1 a {
+    font-size: 18pt;
+  }
+
+  #maincontent {
+    width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 0px 15px #444;
+  }
+}
