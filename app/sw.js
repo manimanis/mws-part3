@@ -11,6 +11,7 @@ self.addEventListener('install', function (event) {
         // javascript
         'register_sw.js',
         'scripts/main.bundle.js',
+        'scripts/restaurant.bundle.js',
         // stylesheets
         'css/styles.css',
         'css/responsive.css',
@@ -41,10 +42,27 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // matches all the request to data
-  // We first return the local copy of the file
-  // than update the local copy from the network
-  if (requestUrl.pathname.startsWith('/data')) {
+  // // matches all the request to data
+  // // We first return the local copy of the file
+  // // than update the local copy from the network
+  // if (requestUrl.pathname.startsWith('/data')) {
+  //   event.respondWith(
+  //     caches.open(siteCacheName).then((cache) => {
+  //       return cache.match(event.request.url).then((cacheResponse) => {
+  //         var netFetch = fetch(event.request).then((netResponse) => {
+  //           cache.put(event.request.url, netResponse.clone());
+  //           return netResponse;
+  //         });
+          
+  //         return cacheResponse || netFetch;
+  //       })
+  //     })
+  //   );
+  //   return;
+  // }
+
+  // matches all the requests to jpg images
+  if (requestUrl.pathname.endsWith('.jpg')) {
     event.respondWith(
       caches.open(siteCacheName).then((cache) => {
         return cache.match(event.request.url).then((cacheResponse) => {
