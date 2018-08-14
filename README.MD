@@ -19,4 +19,4 @@ And than start the development server:
 gulp serve
 ```
 
-You have to run the **data server** prior to this step [Data Server](https://github.com/udacity/mws-restaurant-stage-2).
+You have to run the **data server** prior to this step [Data Server](https://github.com/udacity/mws-restaurant-stage-3).
