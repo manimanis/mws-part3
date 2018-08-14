@@ -37,7 +37,7 @@ self.addEventListener('fetch', function (event) {
   
   // matches all the '/restaurant.html?id=x' requests
   if (requestUrl.pathname === '/restaurant.html') {
-    console.log(requestUrl);
+    // console.log(requestUrl);
     event.respondWith(caches.match('/restaurant.html'));
     return;
   }

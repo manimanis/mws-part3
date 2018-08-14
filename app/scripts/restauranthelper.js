@@ -5,9 +5,9 @@ class RestaurantHelper {
 
     this.id = parseInt(DBHelper.getParameterByName('id'));
     this.restaurant = null;
-    this.db.getById(this.id)
+    this.db.getRestaurantsById(this.id)
       .then(restaurant => {
-        console.log('fetch from idb', restaurant);
+        // console.log('fetch from idb', restaurant);
         if (restaurant) {
           this.init(restaurant);
           return;
@@ -25,7 +25,18 @@ class RestaurantHelper {
           });
       });
 
+    this.db.getAllReviews(this.id)
+      .then(reviews => {
+        console.log('fetch review from idb', reviews);
+        this.fillReviewsHTML(reviews);
 
+        RestaurantFetch.fetchRestaurantReviews(this.id)
+          .then(reviews => {
+            console.log('fetch reviews from nertwork and saving data', reviews);
+            this.db.saveReviews(reviews);
+            this.fillReviewsHTML(reviews);
+          });
+      });
   }
 
   init(restaurant) {
@@ -80,8 +91,10 @@ class RestaurantHelper {
     name.setAttribute('class', 'author');
     li.appendChild(name);
 
+    const updatedDate = new Date(review.updatedAt);
+
     const date = document.createElement('div');
-    date.innerHTML = review.date;
+    date.innerHTML = updatedDate.toDateString();
     date.setAttribute('class', 'date');
     li.appendChild(date);
 
@@ -108,6 +121,8 @@ class RestaurantHelper {
    */
   fillReviewsHTML(reviews) {
     const container = document.getElementById('reviews-container');
+    container.innerHTML = '<ul id="reviews-list"></ul>';
+
     const title = document.createElement('h2');
     title.innerHTML = 'Reviews';
     container.appendChild(title);
@@ -168,7 +183,7 @@ class RestaurantHelper {
       this.fillRestaurantHoursHTML(cuisine.operating_hours);
     }
     // fill reviews
-    this.fillReviewsHTML(restaurant.reviews);
+    // this.fillReviewsHTML(restaurant.reviews);
   }
 
   /**

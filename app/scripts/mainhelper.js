@@ -38,7 +38,7 @@ class MainHelper {
     const cuisine = cSelect[cIndex].value;
     const neighborhood = nSelect[nIndex].value;
 
-    this.restDB.getByCuisineAndNeighborhood(cuisine, neighborhood)
+    this.restDB.getRestaurantsByCuisineAndNeighborhood(cuisine, neighborhood)
       .then(restaurants => {
         this.resetRestaurants();
         this.fillRestaurantsHTML(restaurants);
