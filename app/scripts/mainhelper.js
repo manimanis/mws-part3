@@ -6,7 +6,7 @@ class MainHelper {
     RestaurantFetch.fetchRestaurants()
       .then(restaurants => {
         this.restDB.saveRestaurants(restaurants);
-        
+
         this.updateRestaurants();
         this.fetchNeighborhoods();
         this.fetchCuisines();
@@ -77,6 +77,20 @@ class MainHelper {
     const li = document.createElement('li');
     li.setAttribute('aria-label', restaurant.name + ' restaurant\'s description');
 
+    const favoriteDiv = document.createElement('div');
+    favoriteDiv.classList = ['favorite-restaurant'];
+    li.appendChild(favoriteDiv);
+
+    const favoriteLink = document.createElement('a');
+    favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant' : 'Favorite Restaurant');
+    favoriteLink.innerHTML = '<i class="fas fa-heart"></i>';
+    favoriteLink.href = '#';
+    if (restaurant.is_favorite) { 
+      favoriteLink.className = 'is_favorite'; 
+    }
+    favoriteLink.onclick = this.toggleFavoriteClick(li, restaurant);
+    favoriteDiv.appendChild(favoriteLink);
+
     const picture = document.createElement('picture');
     li.appendChild(picture);
 
@@ -108,11 +122,33 @@ class MainHelper {
     li.append(address);
 
     const more = document.createElement('a');
+    more.classList = ['view-details'];
     more.innerHTML = 'View Details';
     more.href = DBHelper.urlForRestaurant(restaurant);
-    li.append(more)
+    li.append(more);
 
     return li;
+  }
+
+  /**
+   * Return a function used to toggle the favorite state for this button
+   * @param {HTMLElement} li 
+   * @param {Restaurant} restaurant 
+   */
+  toggleFavoriteClick(li, restaurant) {
+    return function(e) {
+      e.preventDefault();
+      const favoriteLink = li.querySelector('div.favorite-restaurant a');
+      console.log(favoriteLink);
+      restaurant.is_favorite = !restaurant.is_favorite;
+      if (restaurant.is_favorite) {
+        favoriteLink.className = 'is_favorite';
+      } else {
+        favoriteLink.removeAttribute('class');
+      }
+
+      // TODO: Add handeling state with IDB and network
+    };
   }
 
   /**

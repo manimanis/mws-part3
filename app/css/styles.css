@@ -242,7 +242,7 @@ nav h1 a {
   font-size: 11pt;
 }
 
-#restaurants-list li a {
+#restaurants-list li a.view-details {
   background-color: orange;
   border-bottom: 3px solid #eee;
   color: #fff;
@@ -558,3 +558,41 @@ a.skip-main:focus, a.skip-main:active {
 #fab button:hover::before {
   display: block;
 }
+
+.favorite-restaurant {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0;
+}
+
+.favorite-restaurant a {
+  display: block;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: lightgray;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.favorite-restaurant a.is_favorite {
+  color: red;
+}
+
+.favorite-restaurant a:focus {
+  background-color: lightgray !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px #fff !important;
+}
+
+.favorite-restaurant a.is_favorite:focus {
+  background-color: red !important;
+  color: #fff !important;
+}
+
+

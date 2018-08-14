@@ -182,8 +182,6 @@ class RestaurantHelper {
     if (restaurant.operating_hours) {
       this.fillRestaurantHoursHTML(cuisine.operating_hours);
     }
-    // fill reviews
-    // this.fillReviewsHTML(restaurant.reviews);
   }
 
   /**
