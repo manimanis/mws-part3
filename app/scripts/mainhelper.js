@@ -136,10 +136,11 @@ class MainHelper {
    * @param {Restaurant} restaurant 
    */
   toggleFavoriteClick(li, restaurant) {
+    const thisObj = this;
     return function(e) {
       e.preventDefault();
       const favoriteLink = li.querySelector('div.favorite-restaurant a');
-      console.log(favoriteLink);
+
       restaurant.is_favorite = !restaurant.is_favorite;
       if (restaurant.is_favorite) {
         favoriteLink.className = 'is_favorite';
@@ -148,6 +149,17 @@ class MainHelper {
       }
 
       // TODO: Add handeling state with IDB and network
+      RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
+      .then(response => response.json())
+      .then(restaurant_net => {
+        thisObj.restDB.saveRestaurant(restaurant_net);
+      })
+      .catch(error => {
+        console.log('Could not un/favorite restaurant', error);
+        // TODO: Set save_pending flag
+        restaurant.save_pending = true;
+        thisObj.restDB.saveRestaurant(restaurant);
+      });
     };
   }
 

@@ -40,6 +40,22 @@ class RestaurantsDB {
   }
 
   /**
+   * Return the list of reviews having one field (save_pending) set to true
+   */
+  getPendingReviews() {
+    return this.getAllReviews()
+      .then(reviews => reviews.filter(review => review.save_pending));
+  }
+
+  /**
+   * Return the list of reviews having one field (save_pending) set to true
+   */
+  getPendingRestaurants() {
+    return this.getAllRestaurants()
+      .then(restaurants => restaurants.filter(restaurant => restaurant.save_pending));
+  }
+
+  /**
    * Return all restaurants
    */
   getAllRestaurants() {
@@ -163,6 +179,20 @@ class RestaurantsDB {
       rs.put(restaurant);
     })
       .catch(error => console.log('saveRestaurant()', error));
+  }
+
+  /**
+   * Save one review in the database.
+   * @param {Review} review 
+   */
+  saveReview(review) {
+    this._promiseDB.then((db) => {
+      const rs = db.transaction(RestaurantsDB.REVIEWS_STORE, 'readwrite')
+        .objectStore(RestaurantsDB.REVIEWS_STORE);
+
+      rs.put(review);
+    })
+      .catch(error => console.log('saveReviews()', error));
   }
 
   /**
