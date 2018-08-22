@@ -76,7 +76,7 @@ class RestaurantsDB {
       const tx = db.transaction(RestaurantsDB.REVIEWS_STORE);
       const idx = tx.objectStore(RestaurantsDB.REVIEWS_STORE)
         .index(RestaurantsDB.RESTAURANT_ID_INDEX);
-      return objStore.getAll(restaurant_id);
+      return idx.getAll(restaurant_id);
     })
       .catch(error => console.log('getAll()', error));
   }

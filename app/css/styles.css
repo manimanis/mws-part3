@@ -516,49 +516,7 @@ a.skip-main:focus, a.skip-main:active {
   }
 }
 
-/************************************************************************/
-#fab {
-  position: fixed;
-  bottom: 2em;
-  right: 2em;
-  z-index: 9999;
-  width: 64px;
-  height: 64px;
-}
-
-#fab button {
-  display: block;
-  width: 64px;
-  height: 64px;
-  font-size: 20pt;
-  font-weight: bolder;
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: #003e69;
-  color: #fff;
-}
-
-#fab button::before {
-  content: "Create Review";
-  position: absolute;
-  width: 120px;
-  bottom: 18px;
-  right: 70px;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: right;
-  font-size: 10pt;
-  background-color: #003e69;
-}
-
-#fab button::before {
-  display: none;
-}
-
-#fab button:hover::before {
-  display: block;
-}
-
+/** favorite restaurant **/
 .favorite-restaurant {
   position: relative;
   display: block;

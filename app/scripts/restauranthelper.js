@@ -180,7 +180,7 @@ class RestaurantHelper {
 
     // fill operating hours
     if (restaurant.operating_hours) {
-      this.fillRestaurantHoursHTML(cuisine.operating_hours);
+      this.fillRestaurantHoursHTML(restaurant.operating_hours);
     }
   }
 
