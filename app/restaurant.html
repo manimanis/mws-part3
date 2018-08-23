@@ -83,15 +83,18 @@
         <span class="close" role="button" aria-label="close">&times;</span>
         <h2>New Review</h2>
       </div>
+
       <div class="modal-content">
         <form action="">
           <div>
             <label for="reviewer_name">Reviewer name</label>
             <input id="reviewer_name" name="reviewer_name" type="text" placeholder="Reviewer name" aria-placeholder="Reviewer name">
+            <small></small>
           </div>
           <div>
             <label for="reviewer_text">Review</label>
             <textarea name="reviewer_text" id="reviewer_text" cols="30" rows="10" placeholder="Your review go here" aria-placeholder="Your review go here"></textarea>
+            <small></small>
           </div>
           <div>
             <label for="reviewer_rating">Rating</label>
@@ -100,8 +103,9 @@
           <div id="reviewer_rating_stars">rating</div>
         </form>
       </div>
+
       <div class="modal-footer">
-        <button>Review</button>
+        <button id="review_btn">Review</button>
       </div>
     </div>
   </div>

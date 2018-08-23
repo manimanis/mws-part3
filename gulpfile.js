@@ -28,6 +28,7 @@ gulp.task('main-scripts', () => {
     'app/scripts/idb.js',
     'app/scripts/dbhelper.js',
     'app/scripts/maphelper.js',
+    'app/scripts/ratingctrl.js',
     'app/scripts/restaurantsfetch.js',
     'app/scripts/restaurantdb.js',
     'app/scripts/mainhelper.js'
@@ -46,6 +47,8 @@ gulp.task('restaurant-scripts', () => {
     'app/scripts/idb.js',
     'app/scripts/dbhelper.js',
     'app/scripts/maphelper.js',
+    'app/scripts/ratingctrl.js',
+    'app/scripts/reviewdialog.js',
     'app/scripts/restaurantsfetch.js',
     'app/scripts/restaurantdb.js',
     'app/scripts/restauranthelper.js'

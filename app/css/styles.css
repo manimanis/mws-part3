@@ -555,6 +555,7 @@ a.skip-main:focus, a.skip-main:active {
 
 /* modal */
 #modal {
+  display: block;
   position: absolute;
   top: 0;
   left: 0;
@@ -622,6 +623,10 @@ a.skip-main:focus, a.skip-main:active {
   width: calc(100% - 2em);
   border-radius: 8px;
   border: 2px solid #666;
+}
+
+.modal-content > form > div > small {
+  color: red;
 }
 
 .modal-footer button {

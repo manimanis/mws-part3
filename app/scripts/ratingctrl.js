@@ -6,11 +6,9 @@ class RatingControl {
   }
 
   init() {
-    rating.innerHTML = '';
-    rating.setAttribute('role', 'note');
-    rating.setAttribute('aria-label', 'rating ' + review.rating + ' stars');
-    rating.setAttribute('aria-atomic', 'true');
-    rating.setAttribute('class', 'rating stars_' + review.rating);
+    this.el.innerHTML = '';
+    this.el.setAttribute('role', 'note');
+    this.el.setAttribute('aria-atomic', 'true');
   }
 
   /**
@@ -38,11 +36,13 @@ class RatingControl {
    * Render the restaurant rating
    */
   renderRating() {
-    rating.innerHTML = '';
+    this.el.innerHTML = '';
+    this.el.setAttribute('aria-label', 'rating ' + this.rating + ' stars');
+    this.el.setAttribute('class', 'rating stars_' + this.rating);
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
-      star.setAttribute('class', (i > rating) ? 'far fa-star' : 'fas fa-star');
-      el.appendChild(star);
+      star.setAttribute('class', (i > this.rating) ? 'far fa-star' : 'fas fa-star');
+      this.el.appendChild(star);
     }
   }
 }

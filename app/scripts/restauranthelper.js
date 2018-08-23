@@ -2,6 +2,7 @@ class RestaurantHelper {
   constructor() {
     this.db = new RestaurantsDB();
     this.restoMap = new MapHelper();
+    this.reviewDlg = new ReviewDialog(document.querySelector('#modal'));
 
     this.id = parseInt(DBHelper.getParameterByName('id'));
     this.restaurant = null;
@@ -66,18 +67,18 @@ class RestaurantHelper {
     breadcrumb.appendChild(li);
   }
 
-  /**
-   * Create a rating with stars
-   */
-  createRating(el, rating) {
-    rating = Math.floor(rating);
+  // /**
+  //  * Create a rating with stars
+  //  */
+  // createRating(el, rating) {
+  //   rating = Math.floor(rating);
 
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.setAttribute('class', (i > rating) ? 'far fa-star' : 'fas fa-star');
-      el.appendChild(star);
-    }
-  }
+  //   for (let i = 1; i <= 5; i++) {
+  //     const star = document.createElement('span');
+  //     star.setAttribute('class', (i > rating) ? 'far fa-star' : 'fas fa-star');
+  //     el.appendChild(star);
+  //   }
+  // }
 
   /**
    * Create review HTML and add it to the webpage.
@@ -99,12 +100,15 @@ class RestaurantHelper {
     li.appendChild(date);
 
     const rating = document.createElement('div');
-    //rating.innerHTML = `${review.rating}`;
-    rating.setAttribute('role', 'note');
-    rating.setAttribute('aria-label', 'rating ' + review.rating + ' stars');
-    rating.setAttribute('aria-atomic', 'true');
-    rating.setAttribute('class', 'rating stars_' + review.rating);
-    this.createRating(rating, review.rating);
+    const ratingCtrl = new RatingControl(rating);
+    ratingCtrl.setRating(review.rating);
+
+    // //rating.innerHTML = `${review.rating}`;
+    // rating.setAttribute('role', 'note');
+    // rating.setAttribute('aria-label', 'rating ' + review.rating + ' stars');
+    // rating.setAttribute('aria-atomic', 'true');
+    // rating.setAttribute('class', 'rating stars_' + review.rating);
+    // this.createRating(rating, review.rating);
 
     li.appendChild(rating);
 
