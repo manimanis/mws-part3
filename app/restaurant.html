@@ -77,6 +77,35 @@
   </main>
   <!-- End main -->
 
+  <div id="modal">
+    <div class="modal-dialog">
+      <div class="modal-title">
+        <span class="close" role="button" aria-label="close">&times;</span>
+        <h2>New Review</h2>
+      </div>
+      <div class="modal-content">
+        <form action="">
+          <div>
+            <label for="reviewer_name">Reviewer name</label>
+            <input id="reviewer_name" name="reviewer_name" type="text" placeholder="Reviewer name" aria-placeholder="Reviewer name">
+          </div>
+          <div>
+            <label for="reviewer_text">Review</label>
+            <textarea name="reviewer_text" id="reviewer_text" cols="30" rows="10" placeholder="Your review go here" aria-placeholder="Your review go here"></textarea>
+          </div>
+          <div>
+            <label for="reviewer_rating">Rating</label>
+            <input id="reviewer_rating" name="reviewer_rating" type="number" min="0" max="5" value="5">
+          </div>
+          <div id="reviewer_rating_stars">rating</div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button>Review</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Beginning footer -->
   <footer id="footer">
     Copyright (c) 2017

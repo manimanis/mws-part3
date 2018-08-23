@@ -553,4 +553,82 @@ a.skip-main:focus, a.skip-main:active {
   color: #fff !important;
 }
 
-/********************/
+/* modal */
+#modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+#modal .modal-dialog {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  width: calc(100% - 2em);
+  background-color: #fff;
+  box-shadow: 0 0 10px #fff;
+}
+
+.modal-dialog .modal-title {
+  background-color: #000;
+  color: #fff;
+}
+
+.modal-dialog .modal-title,
+.modal-dialog .modal-content,
+.modal-dialog .modal-footer {
+  padding: 1em;
+  border-bottom: thin solid #666;
+}
+
+.modal-dialog .modal-footer {
+  border-bottom: 0;
+}
+
+.modal-dialog form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.modal-content > form > div {
+  width: 100%;
+  margin-top: 0.25em;
+} 
+
+.modal-dialog .modal-title .close {
+  float: right;
+  font-size: 1.5em;
+}
+
+.modal-dialog .modal-title h2 {
+  margin: 0;
+  font-family: "Merienda";
+} 
+
+.modal-dialog label {
+  display: block;
+  width: 100%;
+}
+
+.modal-dialog input[type=text],
+.modal-dialog input[type=number],
+.modal-dialog textarea {
+  display: block;
+  padding: 8px;
+  width: calc(100% - 2em);
+  border-radius: 8px;
+  border: 2px solid #666;
+}
+
+.modal-footer button {
+  padding: 1em;
+  background-color: #f58500;  
+  font-weight: bold;
+  border-radius: 8px;
+  border: thin solid #fdb767;
+}
+
