@@ -1,6 +1,9 @@
 class ReviewDialog {
   constructor(el, acceptFunc, cancelFunc) {
     this.el = el;
+
+    this.el.setAttribute('aria-hidden', true);
+
     this.closeBtn = this.el.querySelector('.modal-title > span');
     this.closeBtn.onclick = this.cancel.bind(this);
 
@@ -12,7 +15,7 @@ class ReviewDialog {
 
     // the button is disabled by default
     this.reviewBtn.setAttribute('disabled', true);
-    
+
     // Set rating control change
     this.ratingEl.onchange = this._ratingChanged.bind(this);
     this.ratingCtrl = new RatingControl(this.ratingStarEl);
@@ -102,7 +105,13 @@ class ReviewDialog {
     return valid;
   }
 
+  show() {
+    this.el.setAttribute('aria-hidden', false);
+    this.el.style.display = 'block';
+  }
+
   close() {
+    this.el.setAttribute('aria-hidden', true);
     this.el.style.display = 'none';
   }
 

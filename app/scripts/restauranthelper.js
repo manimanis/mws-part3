@@ -131,12 +131,23 @@ class RestaurantHelper {
     title.innerHTML = 'Reviews';
     container.appendChild(title);
 
+    const divEl = document.createElement('div');
+    divEl.id = 'review_add_new_div';
+    container.appendChild(divEl);
+
+    const addBtn = document.createElement('button');
+    addBtn.id = 'review_add_new_btn';
+    addBtn.innerHTML = '<i class="fas fa-edit"></i> New Review...';
+    addBtn.onclick = this.reviewDlg.show.bind(this.reviewDlg);
+    divEl.appendChild(addBtn);
+
     if (!reviews) {
       const noReviews = document.createElement('p');
       noReviews.innerHTML = 'No reviews yet!';
       container.appendChild(noReviews);
       return;
     }
+
     const ul = document.getElementById('reviews-list');
     reviews.forEach(review => {
       ul.appendChild(this.createReviewHTML(review));
