@@ -575,7 +575,7 @@ a.skip-main:focus, a.skip-main:active {
 
 #modal .modal-dialog {
   position: fixed;
-  top: calc((100% - 500px) / 2);
+  top: calc((100% - 367px) / 2);
   left: 1em;
   width: calc(100% - 2em);
   background-color: #fff;
@@ -618,7 +618,7 @@ a.skip-main:focus, a.skip-main:active {
 
 .modal-dialog .modal-title .close {
   float: right;
-  font-size: 1.5em;
+  font-size: 2em;
   cursor: pointer;
 }
 

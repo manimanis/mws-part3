@@ -5,7 +5,7 @@ class RestaurantFetch {
    */
   static get DATABASE_URL() {
     const port = 1337; // Change this to your server port
-    return `http://localhost:${port}`;
+    return `http://192.168.1.96:${port}`;
   }
 
   /**

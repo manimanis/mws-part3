@@ -36,7 +36,7 @@ class Restaurant {
 class Review {
   constructor(obj) {
     this.id = obj.id || 0;
-    this.restaurant_id || 0;
+    this.restaurant_id = obj.restaurant_id || 0;
     this.name = obj.name || '';
     this.createdAt = DateUtility.toDate(obj.createdAt);
     this.updatedAt = DateUtility.toDate(obj.updatedAt);
