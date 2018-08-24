@@ -3,18 +3,8 @@ class MainHelper {
     this.restDB = new RestaurantsDB();
     this.restoMap = new MapHelper();
 
-    RestaurantFetch.fetchRestaurants()
-      .then(restaurants => {
-        this.restDB.saveRestaurants(restaurants);
-
-        this.updateRestaurants();
-        this.fetchNeighborhoods();
-        this.fetchCuisines();
-      });
-
     this.initMap();
-    this.fetchNeighborhoods();
-    this.fetchCuisines();
+    this.fetchRestaurants();
   }
 
   /**
@@ -22,7 +12,43 @@ class MainHelper {
    */
   initMap() {
     this.restoMap.initMap();
-    this.updateRestaurants();
+  }
+
+  /**
+   * Fetch restaurants from IDB first then try to fetch from network
+   */
+  fetchRestaurants() {
+    this.restDB.getAllRestaurants()
+      .then(idb_restaurants => {
+        this.restaurants = new RestaurantCollection(idb_restaurants);
+
+        this.fetchNeighborhoods();
+        this.fetchCuisines();
+        this.updateRestaurants();
+
+        // Get the pending data 
+        // if the operation succeeds than 
+        //  - clear the pending_save flag
+        //  - update the IDB store
+        const restPending = this.restaurants.getPendingSave();
+        RestaurantFetch.favoriteRestaurants(restPending)
+          .then(() => {
+            this.restaurants.clearPendingSave();
+            this.restDB.saveRestaurants(restPending);
+          });
+
+        // Fetch restaurants from network
+        RestaurantFetch.fetchRestaurants()
+          .then(restaurants => {
+            this.restaurants = new RestaurantCollection(restaurants);
+
+            this.restDB.saveRestaurants(this.restaurants);
+
+            this.fetchNeighborhoods();
+            this.fetchCuisines();
+            this.updateRestaurants();
+          });
+      });
   }
 
   /**
@@ -38,19 +64,15 @@ class MainHelper {
     const cuisine = cSelect[cIndex].value;
     const neighborhood = nSelect[nIndex].value;
 
-    this.restDB.getRestaurantsByCuisineAndNeighborhood(cuisine, neighborhood)
-      .then(restaurants => {
-        this.resetRestaurants();
-        this.fillRestaurantsHTML(restaurants);
-      });
+    const restaurants = this.restaurants.getByCuisineAndNeighborhood(cuisine, neighborhood);
+    this.resetRestaurants();
+    this.fillRestaurantsHTML(restaurants);
   }
 
   /**
    * Clear current restaurants, their HTML and remove their map markers.
    */
   resetRestaurants() {
-    // Remove all restaurants
-    this.restaurants = [];
     const ul = document.getElementById('restaurants-list');
     ul.innerHTML = '';
 
@@ -61,8 +83,6 @@ class MainHelper {
    * Create all restaurants HTML and add them to the webpage.
    */
   fillRestaurantsHTML(restaurants) {
-    this.restaurants = restaurants;
-
     const ul = document.getElementById('restaurants-list');
     restaurants.forEach(restaurant => {
       ul.append(this.createRestaurantHTML(restaurant));
@@ -85,8 +105,8 @@ class MainHelper {
     favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant' : 'Favorite Restaurant');
     favoriteLink.innerHTML = '<i class="fas fa-heart"></i>';
     favoriteLink.href = '#';
-    if (restaurant.is_favorite) { 
-      favoriteLink.className = 'is_favorite'; 
+    if (restaurant.is_favorite) {
+      favoriteLink.className = 'is_favorite';
     }
     favoriteLink.onclick = this.toggleFavoriteClick(li, restaurant);
     favoriteDiv.appendChild(favoriteLink);
@@ -137,7 +157,7 @@ class MainHelper {
    */
   toggleFavoriteClick(li, restaurant) {
     const thisObj = this;
-    return function(e) {
+    return function (e) {
       e.preventDefault();
       const favoriteLink = li.querySelector('div.favorite-restaurant a');
 
@@ -150,16 +170,16 @@ class MainHelper {
 
       // TODO: Add handeling state with IDB and network
       RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
-      .then(response => response.json())
-      .then(restaurant_net => {
-        thisObj.restDB.saveRestaurant(restaurant_net);
-      })
-      .catch(error => {
-        console.log('Could not un/favorite restaurant', error);
-        // TODO: Set save_pending flag
-        restaurant.save_pending = true;
-        thisObj.restDB.saveRestaurant(restaurant);
-      });
+        .then(response => response.json())
+        .then(restaurant_net => {
+          thisObj.restDB.saveRestaurant(new Restaurant(restaurant_net));
+        })
+        .catch(error => {
+          console.log('Could not un/favorite restaurant', error);
+          // TODO: Set save_pending flag
+          restaurant.save_pending = true;
+          thisObj.restDB.saveRestaurant(restaurant);
+        });
     };
   }
 
@@ -174,8 +194,7 @@ class MainHelper {
  * Fetch all cuisines and set their HTML.
  */
   fetchCuisines() {
-    this.restDB.getCuisines()
-      .then(cuisines => this.fillCuisinesHTML(cuisines));
+    this.fillCuisinesHTML(this.restaurants.getCuisines());
   }
 
   /**
@@ -198,10 +217,7 @@ class MainHelper {
    * Fetch all neighborhoods and set their HTML.
    */
   fetchNeighborhoods() {
-    this.restDB.getNeighborhoods()
-      .then(neighborhoods => {
-        this.fillNeighborhoodsHTML(neighborhoods);
-      });
+    this.fillNeighborhoodsHTML(this.restaurants.getNeighborhoods());
   }
 
   /**

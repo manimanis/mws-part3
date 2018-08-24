@@ -204,7 +204,7 @@ class RestaurantsDB {
       const rs = db.transaction(RestaurantsDB.RESTAURANTS_STORE, 'readwrite')
         .objectStore(RestaurantsDB.RESTAURANTS_STORE);
 
-      for (let restaurant of restaurants) {
+      for (let restaurant of restaurants.getAll()) {
         rs.put(restaurant);
       }
     })

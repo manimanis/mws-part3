@@ -27,7 +27,8 @@ class RestaurantFetch {
    */
   static fetchRestaurants() {
     return fetch(RestaurantFetch.RESTAURANTS_URL)
-      .then(response => response.json());
+      .then(response => response.json())
+      .then(restaurants => restaurants.map(restaurant => new Restaurant(restaurant)));
   }
 
   /**
@@ -36,7 +37,8 @@ class RestaurantFetch {
    */
   static fetchRestaurantReviews(restaurant_id) {
     return fetch(RestaurantFetch.REVIEWS_URL + `/?restaurant_id=${restaurant_id}`)
-      .then(response => response.json());
+      .then(response => response.json())
+      .then(reviews => reviews.map(review => new Review(review)));
   }
 
   /**
@@ -77,6 +79,16 @@ class RestaurantFetch {
     return fetch(RestaurantFetch.RESTAURANTS_URL + `/${restaurant_id}/?is_favorite=${is_favorite}`, {
       method: 'PUT'
     });
+  }
+
+  /**
+   * Update the restautant's is_favorite property
+   * @param {array} restaurants 
+   */
+  static favoriteRestaurants(restaurants) {
+    return Promise.all(
+      restaurants.map(restaurant => RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite))
+    );
   }
 }
 

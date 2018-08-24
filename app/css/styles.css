@@ -667,3 +667,7 @@ a.skip-main:focus, a.skip-main:active {
   text-align: center;
   cursor: pointer;
 }
+
+#review_add_new_div {
+  padding: 0.25em;
+}

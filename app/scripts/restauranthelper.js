@@ -67,19 +67,6 @@ class RestaurantHelper {
     breadcrumb.appendChild(li);
   }
 
-  // /**
-  //  * Create a rating with stars
-  //  */
-  // createRating(el, rating) {
-  //   rating = Math.floor(rating);
-
-  //   for (let i = 1; i <= 5; i++) {
-  //     const star = document.createElement('span');
-  //     star.setAttribute('class', (i > rating) ? 'far fa-star' : 'fas fa-star');
-  //     el.appendChild(star);
-  //   }
-  // }
-
   /**
    * Create review HTML and add it to the webpage.
    */

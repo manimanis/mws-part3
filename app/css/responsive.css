@@ -29,7 +29,7 @@
   #reviews-list li {
     margin-right: 0.25em;
     margin-bottom: 0.25em;
-    width: calc((100% - 1.5em) / 2);
+    width: calc((100% - 1.2em) / 2);
   }
 
   #maincontent {
