@@ -34,7 +34,7 @@ class MainHelper {
         if (restPending.length > 0) {
           RestaurantFetch.favoriteRestaurants(restPending)
             .then(() => {
-              this.restaurants.clearPendingSave();
+              restPending.forEach(restaurant => restaurant.save_pending = false);
               this.restDB.saveRestaurants(restPending);
             });
         }
