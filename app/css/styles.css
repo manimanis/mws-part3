@@ -210,7 +210,7 @@ nav h1 a {
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 248px;
+  /* min-height: 248px; */
   min-width: 100%;
 }
 
@@ -638,6 +638,10 @@ a.skip-main:focus, a.skip-main:active {
   width: calc(100% - 2em);
   border-radius: 8px;
   border: 2px solid #666;
+}
+
+.modal-dialog input[type=text]:focus, .modal-dialog input[type=number]:focus, .modal-dialog textarea:focus {
+  color: #fff;
 }
 
 .modal-content>form>div>small {

@@ -104,7 +104,9 @@ class MainHelper {
     li.appendChild(favoriteDiv);
 
     const favoriteLink = document.createElement('a');
-    favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant' : 'Favorite Restaurant');
+    favoriteLink.setAttribute('role', 'switch');
+    favoriteLink.setAttribute('aria-checked', restaurant.is_favorite);
+    favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant ' + restaurant.name : 'Favorite Restaurant ' + restaurant.name);
     favoriteLink.innerHTML = '<i class="fas fa-heart"></i>';
     favoriteLink.href = '#';
     if (restaurant.is_favorite) {
@@ -169,6 +171,8 @@ class MainHelper {
       } else {
         favoriteLink.removeAttribute('class');
       }
+      favoriteLink.setAttribute('aria-checked', restaurant.is_favorite);
+      favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant ' + restaurant.name : 'Favorite Restaurant ' + restaurant.name);
 
       // TODO: Add handeling state with IDB and network
       RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
