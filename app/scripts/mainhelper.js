@@ -104,16 +104,9 @@ class MainHelper {
     li.appendChild(favoriteDiv);
 
     const favoriteLink = document.createElement('a');
-    favoriteLink.setAttribute('role', 'switch');
-    favoriteLink.setAttribute('aria-checked', restaurant.is_favorite);
-    favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant ' + restaurant.name : 'Favorite Restaurant ' + restaurant.name);
-    favoriteLink.innerHTML = '<i class="fas fa-heart"></i>';
-    favoriteLink.href = '#';
-    if (restaurant.is_favorite) {
-      favoriteLink.className = 'is_favorite';
-    }
-    favoriteLink.onclick = this.toggleFavoriteClick(li, restaurant);
     favoriteDiv.appendChild(favoriteLink);
+    const favoriteBtn = new FavoriteBtn(favoriteLink, restaurant);
+    favoriteBtn.setClickHandler(this.toggleFavoriteClick(favoriteBtn));    
 
     const picture = document.createElement('picture');
     li.appendChild(picture);
@@ -156,23 +149,15 @@ class MainHelper {
 
   /**
    * Return a function used to toggle the favorite state for this button
-   * @param {HTMLElement} li 
-   * @param {Restaurant} restaurant 
+   * @param {Restaurant} favoriteBtn 
    */
-  toggleFavoriteClick(li, restaurant) {
+  toggleFavoriteClick(favoriteBtn) {
     const thisObj = this;
     return function (e) {
       e.preventDefault();
-      const favoriteLink = li.querySelector('div.favorite-restaurant a');
-
-      restaurant.is_favorite = !restaurant.is_favorite;
-      if (restaurant.is_favorite) {
-        favoriteLink.className = 'is_favorite';
-      } else {
-        favoriteLink.removeAttribute('class');
-      }
-      favoriteLink.setAttribute('aria-checked', restaurant.is_favorite);
-      favoriteLink.setAttribute('aria-label', (restaurant.is_favorite) ? 'Unfavorite Restaurant ' + restaurant.name : 'Favorite Restaurant ' + restaurant.name);
+      
+      const restaurant = favoriteBtn.getRestaurant();
+      favoriteBtn.toggle();
 
       // TODO: Add handeling state with IDB and network
       RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
