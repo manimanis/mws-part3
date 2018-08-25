@@ -197,14 +197,15 @@ class RestaurantsDB {
 
   /**
    * Saves all the restaurants in the database.
-   * @param {Cuisine[]} restaurants 
+   * @param {Array | RestaurantCollection} restaurants 
    */
   saveRestaurants(restaurants) {
     this._promiseDB.then((db) => {
       const rs = db.transaction(RestaurantsDB.RESTAURANTS_STORE, 'readwrite')
         .objectStore(RestaurantsDB.RESTAURANTS_STORE);
-
-      for (let restaurant of restaurants.getAll()) {
+      
+      const restArr = (restaurants instanceof RestaurantCollection) ? restaurants.getAll() : restaurants;
+      for (let restaurant of restArr) {
         rs.put(restaurant);
       }
     })

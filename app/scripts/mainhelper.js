@@ -31,11 +31,13 @@ class MainHelper {
         //  - clear the pending_save flag
         //  - update the IDB store
         const restPending = this.restaurants.getPendingSave();
-        RestaurantFetch.favoriteRestaurants(restPending)
-          .then(() => {
-            this.restaurants.clearPendingSave();
-            this.restDB.saveRestaurants(restPending);
-          });
+        if (restPending.length > 0) {
+          RestaurantFetch.favoriteRestaurants(restPending)
+            .then(() => {
+              this.restaurants.clearPendingSave();
+              this.restDB.saveRestaurants(restPending);
+            });
+        }
 
         // Fetch restaurants from network
         RestaurantFetch.fetchRestaurants()
