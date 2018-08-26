@@ -38,15 +38,29 @@ class RestaurantFetch {
   static fetchRestaurantReviews(restaurant_id) {
     return fetch(RestaurantFetch.REVIEWS_URL + `/?restaurant_id=${restaurant_id}`)
       .then(response => response.json())
-      .then(reviews => reviews.map(review => new Review(review)));
+      .then(reviews => reviews.map(review => new Review(review)).sort((a, b) => b.updatedAt - a.updatedAt));
   }
 
+  static jsonURIEncode(json) {
+    return Object.keys(json).map(function (key) {
+      return encodeURIComponent(key) + '=' +
+        encodeURIComponent(json[key]);
+    }).join('&');
+  }
   /**
    * Create a review with the review object. 
    * @param {object} review 
    */
   static createReview(review) {
-    const bodyData = JSON.stringify(review);
+    // Get only the necessary data from the Review object
+    const netReview = {
+      restaurant_id: review.restaurant_id,
+      name: review.name,
+      rating: review.rating,
+      comments: review.comments
+    };
+
+    const bodyData = RestaurantFetch.jsonURIEncode(netReview);
     const headers = new Headers();
     headers.append('Content-Length', bodyData.length);
     headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
@@ -59,15 +73,24 @@ class RestaurantFetch {
 
   /**
    * Update the specified review.
-   * @param {number} review_id
-   * @param {object} review 
+   * @param {Review} review 
    */
-  static updateReview(review_id, review) {
+  static updateReview(review) {
     const bodyData = JSON.stringify(review);
-    return fetch(RestaurantFetch.REVIEWS_URL + `/${review_id}`, {
+    return fetch(RestaurantFetch.REVIEWS_URL + `/${review.id}`, {
       method: 'PUT',
       body: bodyData
     });
+  }
+
+  /**
+   * Update an array of reviews
+   * @param {Review} reviews 
+   */
+  static updateReviews(reviews) {
+    return Promise.all(
+      reviews.map(review => RestaurantFetch.updateReview(review))
+    );
   }
 
   /**

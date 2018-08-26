@@ -1,4 +1,10 @@
 class FavoriteBtn {
+  /**
+   * Make a HTML link anchor behave as a switch control to favorite/unfavorite
+   * one restaurant.
+   * @param {HTMLElement} el the anchor element
+   * @param {Restaurant} restaurant 
+   */
   constructor(el, restaurant) {
     this.el = el;
     this.el.setAttribute('role', 'switch');

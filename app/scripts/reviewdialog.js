@@ -15,6 +15,7 @@ class ReviewDialog {
 
     // the button is disabled by default
     this.reviewBtn.setAttribute('disabled', true);
+    this.reviewBtn.onclick = this.accept.bind(this);
 
     // Set rating control change
     this.ratingEl.onchange = this._ratingChanged.bind(this);
@@ -29,6 +30,20 @@ class ReviewDialog {
     this.acceptFunc = acceptFunc || function () {};
     this.cancelFunc = cancelFunc || function () {};
 
+    // When the user clicks outside the dialog window
+    const thisObj = this;
+    window.onclick = function (event) {
+      if (event.target === thisObj.el) {
+        thisObj.cancel();
+      }
+    };
+  }
+
+  /**
+   * Escape the string
+   * @param {string} string 
+   */
+  _escapeHTML(string) {
     // escape the user entries
     var htmlEscapes = {
       '&': '&amp;',
@@ -41,33 +56,39 @@ class ReviewDialog {
     
     // Regex containing the keys listed immediately above.
     var htmlEscaper = /[&<>"'\/]/g;
-    
-    // Escape a string for HTML interpolation.
-    this._escapeHTML = function(string) {
-      return ('' + string).replace(htmlEscaper, function(match) {
-        return htmlEscapes[match];
-      });
-    };
 
-    const thisObj = this;
-    window.onclick = function (event) {
-      if (event.target === thisObj.el) {
-        thisObj.cancel();
-      }
-    };
+    return ('' + string).replace(htmlEscaper, function(match) {
+      return htmlEscapes[match];
+    });
   }
 
+  /**
+   * Update the RatingCtrl basedon user input
+   */
   _ratingChanged() {
-    const newRating = parseInt(this.ratingEl.value);
-    this.ratingCtrl.setRating(newRating);
+    this.ratingCtrl.setRating(this.getReviewerRating());
   }
 
+  /**
+   * Return true if the reviewer name is composed of alphanumeric characters
+   */
   _validateName() {
     var validRegEx = /^[A-Za-z0-9 ]+$/gi;
-    const name = this._escapeHTML(this.nameEl.value);
+    const name = this.getReviewerName();
     return name.length >= 5 && name.length <= 48 && validRegEx.test(name);
   }
 
+  /**
+   * The review text length should not exceed 512 characters
+   */
+  _validateReview() {
+    const review = this.getReviewerComments();
+    return review.length >= 10 && review.length <= 512;
+  }
+
+  /**
+   * Validate the reviewer name after the user changes the input field text
+   */
   _reviewerNameChanged() {
     const errorEl = this.el.querySelector('#reviewer_name + small');
     const valid = this._validateName();
@@ -79,11 +100,9 @@ class ReviewDialog {
     this.isValid();
   }
 
-  _validateReview() {
-    const review = this._escapeHTML(this.reviewEl.value);
-    return review.length >= 10 && review.length <= 512;
-  }
-
+  /**
+   * Validate the review contents after the user changes the input field text
+   */
   _reviewerTextChanged() {
     const errorEl = this.el.querySelector('#reviewer_text + small');
     const valid = this._validateReview();
@@ -95,33 +114,98 @@ class ReviewDialog {
     this.isValid();
   }
 
-  isValid() {
-    const valid = this._validateName() && this._validateReview();
-    if (!valid) {
+  /**
+   * Enable/Disable the review submit button
+   * @param {boolean} enable 
+   */
+  _enableReviewBtn(enable) {
+    if (!enable) {
       this.reviewBtn.setAttribute('disabled', true);
     } else {
       this.reviewBtn.removeAttribute('disabled');
     }
+  }
+
+  /**
+   * Return the review rating value
+   * @returns {number}
+   */
+  getReviewerRating() {
+    return parseInt(this.ratingEl.value);
+  }
+
+  /**
+   * Return the reviewer name
+   * @param {boolean} escape 
+   */
+  getReviewerName(escape) {
+    if (escape) {
+      return this._escapeHTML(this.nameEl.value.trim());
+    }
+    return this.nameEl.value.trim();
+  }
+
+  /**
+   * Return the reviewer comment
+   * @param {boolean} escape 
+   */
+  getReviewerComments(escape) {
+    if (escape) {
+      return this._escapeHTML(this.reviewEl.value.trim());
+    }
+    return this.reviewEl.value.trim();
+  }
+
+  /**
+   * @returns {Review}
+   */
+  getReview() {
+    return new Review({
+      name: this.getReviewerName(true),
+      comments: this.getReviewerComments(true),
+      rating: this.getReviewerRating()
+    });
+  }
+
+  /**
+   * Return true if the form contains valid data
+   * If the data is valid the submit button is enabled
+   */
+  isValid() {
+    const valid = this._validateName() && this._validateReview();
+    this._enableReviewBtn(valid);
     return valid;
   }
 
-  show() {
+  /**
+   * Display this dialog
+   */
+  showDialog() {
     this.el.setAttribute('aria-hidden', false);
     this.el.style.display = 'block';
   }
 
-  close() {
+  /**
+   * Hide this dialog
+   */
+  _close() {
     this.el.setAttribute('aria-hidden', true);
     this.el.style.display = 'none';
   }
 
+  /**
+   * Action to take when the user clicks on this submit button
+   */
   accept() {
-    this.close();
+    this._close();
     this.acceptFunc();
   }
 
+  /**
+   * Action to take when the user clicks on cancel button
+   */
   cancel() {
-    this.close();
+    this._close();
     this.cancelFunc();
   }
 }

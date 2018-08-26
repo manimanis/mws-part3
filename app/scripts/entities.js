@@ -8,7 +8,7 @@ class DateUtility {
     // The date is in the ISO format "2018-08-23T17:14:20.633Z"
     const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}.\d+)Z/g;
     const dateArr = regex.exec(value);
-    if (dateArr.length == 7) {
+    if (dateArr && dateArr.length == 7) {
       return Date.UTC(dateArr[1], dateArr[2] - 1, dateArr[3], dateArr[4], dateArr[5], dateArr[6]);
     }
 

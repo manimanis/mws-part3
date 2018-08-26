@@ -2,9 +2,19 @@ class RestaurantHelper {
   constructor() {
     this.db = new RestaurantsDB();
     this.restoMap = new MapHelper();
-    this.reviewDlg = new ReviewDialog(document.querySelector('#modal'));
 
     this.id = parseInt(DBHelper.getParameterByName('id'));
+
+    var thisObj = this;
+    this.reviewDlg = new ReviewDialog(document.querySelector('#modal'), function () {
+      // save the review when the user submit it
+      const review = thisObj.reviewDlg.getReview();
+      review.restaurant_id = thisObj.id;
+
+      RestaurantFetch.createReview(review)
+        .then(review => console.log('Review saved: ', review))
+    });
+
     this.restaurant = null;
     this.db.getRestaurantsById(this.id)
       .then(restaurant => {
@@ -87,17 +97,10 @@ class RestaurantHelper {
     li.appendChild(date);
 
     const rating = document.createElement('div');
+    li.appendChild(rating);
+
     const ratingCtrl = new RatingControl(rating);
     ratingCtrl.setRating(review.rating);
-
-    // //rating.innerHTML = `${review.rating}`;
-    // rating.setAttribute('role', 'note');
-    // rating.setAttribute('aria-label', 'rating ' + review.rating + ' stars');
-    // rating.setAttribute('aria-atomic', 'true');
-    // rating.setAttribute('class', 'rating stars_' + review.rating);
-    // this.createRating(rating, review.rating);
-
-    li.appendChild(rating);
 
     const comments = document.createElement('div');
     comments.innerHTML = review.comments;
@@ -125,7 +128,7 @@ class RestaurantHelper {
     const addBtn = document.createElement('button');
     addBtn.id = 'review_add_new_btn';
     addBtn.innerHTML = '<i class="fas fa-edit"></i> New Review...';
-    addBtn.onclick = this.reviewDlg.show.bind(this.reviewDlg);
+    addBtn.onclick = this.reviewDlg.showDialog.bind(this.reviewDlg);
     divEl.appendChild(addBtn);
 
     if (!reviews) {

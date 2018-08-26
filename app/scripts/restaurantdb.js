@@ -78,6 +78,7 @@ class RestaurantsDB {
         .index(RestaurantsDB.RESTAURANT_ID_INDEX);
       return idx.getAll(restaurant_id);
     })
+      .then(reviews => reviews.map(review => new Review(review)).sort((a, b) => b.updatedAt - a.updatedAt))
       .catch(error => console.log('getAll()', error));
   }
 
@@ -203,7 +204,7 @@ class RestaurantsDB {
     this._promiseDB.then((db) => {
       const rs = db.transaction(RestaurantsDB.RESTAURANTS_STORE, 'readwrite')
         .objectStore(RestaurantsDB.RESTAURANTS_STORE);
-      
+
       const restArr = (restaurants instanceof RestaurantCollection) ? restaurants.getAll() : restaurants;
       for (let restaurant of restArr) {
         rs.put(restaurant);

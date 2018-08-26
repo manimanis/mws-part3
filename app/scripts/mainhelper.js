@@ -26,30 +26,23 @@ class MainHelper {
         this.fetchCuisines();
         this.updateRestaurants();
 
-        // Get the pending data 
-        // if the operation succeeds than 
-        //  - clear the pending_save flag
-        //  - update the IDB store
-        const restPending = this.restaurants.getPendingSave();
-        if (restPending.length > 0) {
-          RestaurantFetch.favoriteRestaurants(restPending)
-            .then(() => {
-              restPending.forEach(restaurant => restaurant.save_pending = false);
-              this.restDB.saveRestaurants(restPending);
-            });
-        }
+        DataPersister.persistSavePending()
+          .then(() => {
+            console.log('Pending data saved successfully');
 
-        // Fetch restaurants from network
-        RestaurantFetch.fetchRestaurants()
-          .then(restaurants => {
-            this.restaurants = new RestaurantCollection(restaurants);
+            // Fetch restaurants from network
+            RestaurantFetch.fetchRestaurants()
+              .then(restaurants => {
+                this.restaurants = new RestaurantCollection(restaurants);
 
-            this.restDB.saveRestaurants(this.restaurants);
+                this.restDB.saveRestaurants(this.restaurants);
 
-            this.fetchNeighborhoods();
-            this.fetchCuisines();
-            this.updateRestaurants();
-          });
+                this.fetchNeighborhoods();
+                this.fetchCuisines();
+                this.updateRestaurants();
+              });
+          })
+          .catch(() => console.log('Cannot save pending data'));
       });
   }
 
@@ -106,7 +99,7 @@ class MainHelper {
     const favoriteLink = document.createElement('a');
     favoriteDiv.appendChild(favoriteLink);
     const favoriteBtn = new FavoriteBtn(favoriteLink, restaurant);
-    favoriteBtn.setClickHandler(this.toggleFavoriteClick(favoriteBtn));    
+    favoriteBtn.setClickHandler(this.toggleFavoriteClick(favoriteBtn));
 
     const picture = document.createElement('picture');
     li.appendChild(picture);
@@ -155,7 +148,7 @@ class MainHelper {
     const thisObj = this;
     return function (e) {
       e.preventDefault();
-      
+
       const restaurant = favoriteBtn.getRestaurant();
       favoriteBtn.toggle();
 
