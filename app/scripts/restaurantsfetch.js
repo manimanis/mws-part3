@@ -47,6 +47,7 @@ class RestaurantFetch {
         encodeURIComponent(json[key]);
     }).join('&');
   }
+  
   /**
    * Create a review with the review object. 
    * @param {object} review 
