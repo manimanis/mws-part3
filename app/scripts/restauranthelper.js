@@ -12,54 +12,104 @@ class RestaurantHelper {
       review.restaurant_id = thisObj.id;
 
       RestaurantFetch.createReview(review)
-        .then(review => console.log('Review saved: ', review))
+        .then(review => {
+          console.log('Review saved: ', review);
+          thisObj.db.saveReview(review);
+          thisObj.getReviewsFromDB();
+        })
+        .catch(error => {
+          console.log('Could not save the review, your review will be saved for later sync');
+          thisObj.db.addToPendingQueue(review);
+          thisObj.db.saveReview(review);
+          thisObj.getReviewsFromDB();
+        });
     });
 
+    this.initMap();
+
     this.restaurant = null;
-    this.db.getRestaurantsById(this.id)
-      .then(restaurant => {
-        // console.log('fetch from idb', restaurant);
-        if (restaurant) {
-          this.init(restaurant);
-          return;
-        }
-
-        RestaurantFetch.fetchRestaurants()
-          .then(restaurants => {
-            console.log('fetch from network and saving data');
-            this.db.saveRestaurants(restaurants);
-            this.db.getById(this.id)
-              .then(restaurant => {
-                console.log('fetch from idb', restaurant);
-                this.init(restaurant);
-              });
-          });
-      });
-
-    this.db.getAllReviews(this.id)
-      .then(reviews => {
-        console.log('fetch review from idb', reviews);
-        this.fillReviewsHTML(reviews);
-
-        RestaurantFetch.fetchRestaurantReviews(this.id)
-          .then(reviews => {
-            console.log('fetch reviews from nertwork and saving data', reviews);
-            this.db.saveReviews(reviews);
-            this.fillReviewsHTML(reviews);
-          });
-      });
+    this.getRestaurantFromDB()
+      .then(() => this.getReviewsFromDB())
+      .then(() => DataPersister.persistSavePending())
+      .then(() => console.log('All pending data are saved'))
+      .then(() => this.fetchRestaurantFromNetwork())
+      .then(() => this.fetchReviewsFromNetwork())
+      .then(() => this.getRestaurantFromDB())
+      .then(() => this.getReviewsFromDB());
   }
 
   init(restaurant) {
     this.restaurant = restaurant;
     this.initMap(restaurant);
-    this.fillBreadcrumb(restaurant);
-    this.restoMap.mapMarkerForRestaurant(restaurant);
-    this.fillRestaurantHTML(restaurant);
   }
 
-  initMap(restaurant) {
-    this.restoMap.initMap([restaurant.latlng.lat, restaurant.latlng.lng]);
+  initMap() {
+    this.restoMap.initMap();
+  }
+
+  /**
+   * Center the map on the following coordinates
+   * @param {array} restaurant 
+   */
+  centerMap(restaurant) {
+    this.restoMap.centerMap([restaurant.latlng.lat, restaurant.latlng.lng]);
+  }
+
+  /**
+   * Fetch restaurant data from IDB
+   * @returns {Promise<Restaurant>}
+   */
+  getRestaurantFromDB() {
+    console.log('Fetch restaurant data from IDB');
+    return this.db.getRestaurantsById(this.id)
+      .then(restaurant => {
+        this.centerMap(restaurant);
+        this.fillBreadcrumb(restaurant);
+        this.restoMap.mapMarkerForRestaurant(restaurant);
+        this.fillRestaurantHTML(restaurant);
+        return restaurant;
+      });
+  }
+
+  /**
+   * Fetch restaurant information than save them in IDB
+   * @return {Promise<restaurant>}
+   */
+  fetchRestaurantFromNetwork() {
+    console.log('Fetch restaurant information than save them in IDB');
+    return RestaurantFetch.fetchRestaurant(this.id)
+      .then(restaurant => {
+        console.log('fetch restaurant from network and saving data');
+        this.db.saveRestaurant(restaurant);
+        return restaurant;
+      });
+  }
+
+  /**
+   * Fetch Reviews data from IDB
+   * @returns {Promise<Review>}
+   */
+  getReviewsFromDB() {
+    console.log('Fetch Reviews data from IDB');
+    return this.db.getAllReviews(this.id)
+      .then(reviews => {
+        console.log(`fetched ${reviews.length} reviews from idb`);
+        this.fillReviewsHTML(reviews);
+        return reviews;
+      });
+  }
+
+  /**
+   * Fetch reviews informations from Network and save the data to IDB
+   * @return {Promise<Review[]>}
+   */
+  fetchReviewsFromNetwork() {
+    console.log('Fetch reviews informations from Network and save the data to IDB');
+    return RestaurantFetch.fetchRestaurantReviews(this.id)
+      .then(reviews => {
+        this.db.saveReviews(reviews);
+        return reviews;
+      });
   }
 
   /**

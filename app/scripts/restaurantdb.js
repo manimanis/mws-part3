@@ -23,8 +23,17 @@ class RestaurantsDB {
     return 'restaurant_id';
   }
 
+  static get PENDING_SAVE_RESTOS() {
+    return 'pending_save_restaurants';
+  }
+
+  static get PENDING_SAVE_REVIEWS() {
+    return 'pending_save_reviews';
+  }
+
   constructor() {
-    this._promiseDB = idb.open(RestaurantsDB.DB_NAME, 1, (db) => {
+    this._promiseDB = idb.open(RestaurantsDB.DB_NAME, 3, (db) => {
+      console.log('create data store');
       if (!db.objectStoreNames.contains(RestaurantsDB.RESTAURANTS_STORE)) {
         const os = db.createObjectStore(RestaurantsDB.RESTAURANTS_STORE, { keyPath: 'id' });
         os.createIndex(RestaurantsDB.CUISINE_TYPE_INDEX, RestaurantsDB.CUISINE_TYPE_INDEX);
@@ -35,24 +44,82 @@ class RestaurantsDB {
         const os = db.createObjectStore(RestaurantsDB.REVIEWS_STORE, { keyPath: 'id' });
         os.createIndex(RestaurantsDB.RESTAURANT_ID_INDEX, RestaurantsDB.RESTAURANT_ID_INDEX);
       }
+
+      if (!db.objectStoreNames.contains(RestaurantsDB.PENDING_SAVE_RESTOS)) {
+        const os = db.createObjectStore(RestaurantsDB.PENDING_SAVE_RESTOS);
+      }
+
+      if (!db.objectStoreNames.contains(RestaurantsDB.PENDING_SAVE_REVIEWS)) {
+        const os = db.createObjectStore(RestaurantsDB.PENDING_SAVE_REVIEWS);
+      }
     })
       .catch(error => console.log('idb open', error));
   }
 
   /**
-   * Return the list of reviews having one field (save_pending) set to true
+   * Return the list of reviews having (save_pending) set to true
    */
   getPendingReviews() {
-    return this.getAllReviews()
-      .then(reviews => reviews.filter(review => review.save_pending));
+    return this._promiseDB.then((db) => {
+      return db.transaction(RestaurantsDB.PENDING_SAVE_REVIEWS)
+        .objectStore(RestaurantsDB.PENDING_SAVE_REVIEWS)
+        .getAll()
+        .then(reviews => reviews.map(review => new Review(review)));
+    });
   }
 
   /**
-   * Return the list of reviews having one field (save_pending) set to true
+   * Return the list of retaurants having (save_pending) set to true
    */
   getPendingRestaurants() {
-    return this.getAllRestaurants()
-      .then(restaurants => restaurants.filter(restaurant => restaurant.save_pending));
+    return this._promiseDB.then((db) => {
+      return db.transaction(RestaurantsDB.PENDING_SAVE_RESTOS)
+        .objectStore(RestaurantsDB.PENDING_SAVE_RESTOS)
+        .getAll()
+        .then(restaurants => restaurants.map(restaurant => new Restaurant(restaurant)));
+    });
+  }
+
+  _getObjectKeyVal(object) {
+    let objStore = null, objKey = null, objVal = null;
+    if (object instanceof Restaurant) {
+      objStore = RestaurantsDB.PENDING_SAVE_RESTOS;
+      objKey = `Resto${object.id}`;
+      objVal = object;
+    } else if (object instanceof Review) {
+      objKey = `${object.restaurant_id}${object.name}${object.comments}`;
+      objStore = RestaurantsDB.PENDING_SAVE_REVIEWS;
+      objVal = object;
+    }
+    return [objStore, objKey, objVal];
+  }
+
+  addToPendingQueue(object) {
+    let [objStore, objKey, objVal] = this._getObjectKeyVal(object);
+
+    if (objStore == null || objKey == null || objVal == null) {
+      return Promise.reject('Cannot save an object of that type in IDB');
+    }
+
+    return this._promiseDB.then((db) => {
+      return db.transaction(objStore, 'readwrite')
+        .objectStore(objStore)
+        .put(objVal, objKey);
+    });
+  }
+
+  removeFromPendingQueue(object) {
+    let [objStore, objKey, objVal] = this._getObjectKeyVal(object);
+
+    if (objStore == null || objKey == null || objVal == null) {
+      return Promise.reject('Cannot remove this object from IDB');
+    }
+
+    return this._promiseDB.then((db) => {
+      return db.transaction(objStore, 'readwrite')
+        .objectStore(objStore)
+        .delete(objKey);
+    });
   }
 
   /**

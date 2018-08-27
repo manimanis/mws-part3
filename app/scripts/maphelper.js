@@ -12,7 +12,6 @@ class MapHelper {
     }
     
     this.restoMap = L.map('map', {
-      center: coordinates,
       zoom: 12,
       scrollWheelZoom: false,
       // the map is not focused by default
@@ -26,6 +25,15 @@ class MapHelper {
         'Imagery © <a href="https://www.mapbox.com/" tabindex="-1">Mapbox</a>',
       id: 'mapbox.streets'
     }).addTo(this.restoMap);
+    this.centerMap(coordinates);
+  }
+
+  /**
+   * center the map to the specified coordinates
+   * @param {array} coordinates 
+   */
+  centerMap(coordinates) {
+    this.restoMap.setView(coordinates);
   }
 
   /**

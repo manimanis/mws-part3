@@ -29,20 +29,18 @@ class Restaurant {
     this.createdAt = DateUtility.toDate(obj.createdAt);
     this.updatedAt = DateUtility.toDate(obj.updatedAt);
     this.is_favorite = obj.is_favorite === true || obj.is_favorite === 'true';
-    this.save_pending = obj.save_pending || false;
   }
 }
 
 class Review {
   constructor(obj) {
-    this.id = obj.id || 0;
-    this.restaurant_id = obj.restaurant_id || 0;
+    this.id = parseInt(obj.id) || 0;
+    this.restaurant_id = parseInt(obj.restaurant_id) || 0;
     this.name = obj.name || '';
     this.createdAt = DateUtility.toDate(obj.createdAt);
     this.updatedAt = DateUtility.toDate(obj.updatedAt);
     this.rating = parseInt(obj.rating) || 0;
     this.comments = obj.comments || '';
-    this.save_pending = obj.save_pending || false;
   }
 }
 
@@ -68,19 +66,6 @@ class RestaurantCollection {
    */
   getAll() {
     return this.restaurants;
-  }
-
-  /**
-   * Return all restaurants that are waiting to be synced with the server
-   */
-  getPendingSave() {
-    return this.restaurants.filter(restaurant => restaurant.save_pending);
-  }
-
-  clearPendingSave() {
-    for (let restaurant of this.restaurants) {
-      restaurant.save_pending = false;
-    }
   }
 
   /**

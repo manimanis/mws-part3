@@ -32,6 +32,16 @@ class RestaurantFetch {
   }
 
   /**
+   * Fetch one restaurant from network.
+   * @param {number} id
+   */
+  static fetchRestaurant(id) {
+    return fetch(RestaurantFetch.RESTAURANTS_URL + `/${id}`)
+      .then(response => response.json())
+      .then(restaurant => new Restaurant(restaurant));
+  }
+
+  /**
    * Fetch restaurants reviews.
    * @param {number} restaurant_id 
    */
@@ -47,7 +57,7 @@ class RestaurantFetch {
         encodeURIComponent(json[key]);
     }).join('&');
   }
-  
+
   /**
    * Create a review with the review object. 
    * @param {object} review 
@@ -69,7 +79,19 @@ class RestaurantFetch {
       method: 'POST',
       headers: headers,
       body: bodyData
-    });
+    })
+      .then(response => response.json())
+      .then(review => new Review(review));
+  }
+
+  /**
+   * Create an array of reviews
+   * @param {Review} reviews 
+   */
+  static createReviews(reviews) {
+    return Promise.all(
+      reviews.map(review => RestaurantFetch.createReview(review))
+    );
   }
 
   /**

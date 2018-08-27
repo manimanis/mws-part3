@@ -152,17 +152,12 @@ class MainHelper {
       const restaurant = favoriteBtn.getRestaurant();
       favoriteBtn.toggle();
 
-      // TODO: Add handeling state with IDB and network
+      // If we cannot un/favorite a restaurant we add it to the pending queue
       RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
-        .then(response => response.json())
-        .then(restaurant_net => {
-          thisObj.restDB.saveRestaurant(new Restaurant(restaurant_net));
-        })
+        .then(() => console.log(`Restaurant ${restaurant.name} ` + (restaurant.is_favorite ? 'is favorite' : 'is unfavorite')))
         .catch(error => {
           console.log('Could not un/favorite restaurant', error);
-          // TODO: Set save_pending flag
-          restaurant.save_pending = true;
-          thisObj.restDB.saveRestaurant(restaurant);
+          thisObj.restDB.addToPendingQueue(restaurant);
         });
     };
   }

@@ -10,31 +10,30 @@ class DataPersister {
         // Try to persist save_pending restaurants
         const restPromise = restDB.getPendingRestaurants()
             .then(restPending => {
-                console.log(restPending.length, ' pending restaurants');
+                console.log('Pending restaurants: ', restPending.length);
                 if (restPending.length == 0) {
                     return Promise.resolve();
                 }
 
                 return RestaurantFetch.favoriteRestaurants(restPending)
                     .then(() => {
-                        restPending.forEach(restaurant => restaurant.save_pending = false);
-                        restDB.saveRestaurants(restPending);
+                        restPending.forEach(restaurant => restDB.removeFromPendingQueue(restaurant));
                         return Promise.resolve();
                     });
             });
 
+
         // Try to persist save_pending reviews
         const revPromise = restDB.getPendingReviews()
             .then(revPending => {
-                console.log(revPending.length, ' pending reviews');
+                console.log('Pending reviews: ', revPending.length);
                 if (revPending.length == 0) {
                     return Promise.resolve();
                 }
 
-                RestaurantFetch.updateReviews(revPending)
+                RestaurantFetch.createReviews(revPending)
                     .then(() => {
-                        revPending.forEach(review => review.save_pending = false);
-                        restDB.saveReviews(revPending);
+                        revPending.forEach(review => restDB.removeFromPendingQueue(review));
                         return Promise.resolve();
                     });
             });
