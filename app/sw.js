@@ -10,8 +10,10 @@ var internalResources = [
   'restaurant.html',
   // javascript
   'register_sw.js',
+  'scripts/worker.js',
   'scripts/main.bundle.js',
   'scripts/restaurant.bundle.js',
+  'scripts/worker.bundle.js',
   // stylesheets
   'css/styles.css',
   'css/responsive.css',
