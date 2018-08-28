@@ -23,9 +23,28 @@ gulp.task('styles', () => {
     .pipe(reload({ stream: true }));
 });
 
+gulp.task('webworker-scripts', () => {
+  return gulp.src([
+    'app/scripts/idb.js',
+    'app/scripts/md5.js',
+    'app/scripts/entities.js',
+    'app/scripts/restaurantsfetch.js',
+    'app/scripts/datapersistance.js',
+    'app/scripts/restaurantdb.js'
+  ])
+    .pipe($.plumber())
+    .pipe($.if(dev, $.sourcemaps.init()))
+    .pipe($.babel())
+    .pipe(concat('worker.bundle.js'))
+    .pipe($.if(dev, $.sourcemaps.write('.')))
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(reload({ stream: true }));
+});
+
 gulp.task('main-scripts', () => {
   return gulp.src([
     'app/scripts/idb.js',
+    'app/scripts/md5.js',
     'app/scripts/entities.js',
     'app/scripts/favoritebtn.js',
     'app/scripts/dbhelper.js',
@@ -48,6 +67,7 @@ gulp.task('main-scripts', () => {
 gulp.task('restaurant-scripts', () => {
   return gulp.src([
     'app/scripts/idb.js',
+    'app/scripts/md5.js',
     'app/scripts/entities.js',
     'app/scripts/favoritebtn.js',
     'app/scripts/dbhelper.js',
@@ -68,7 +88,7 @@ gulp.task('restaurant-scripts', () => {
     .pipe(reload({ stream: true }));
 });
 
-gulp.task('scripts', ['main-scripts', 'restaurant-scripts']);
+gulp.task('scripts', ['main-scripts', 'restaurant-scripts', 'webworker-scripts']);
 
 gulp.task('copy-scripts', () => {
   return gulp.src('.tmp/scripts/*.js')

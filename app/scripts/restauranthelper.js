@@ -9,7 +9,7 @@ class RestaurantHelper {
     this.reviewDlg = new ReviewDialog(document.querySelector('#modal'), function () {
       // save the review when the user submit it
       const review = thisObj.reviewDlg.getReview();
-      review.restaurant_id = thisObj.id;
+      review.setRestaurantId(thisObj.id);
 
       RestaurantFetch.createReview(review)
         .then(review => {
@@ -22,25 +22,35 @@ class RestaurantHelper {
           thisObj.db.addToPendingQueue(review);
           thisObj.db.saveReview(review);
           thisObj.getReviewsFromDB();
+
+          // relay the task to the worker
+          thisObj.worker.postMessage('start');
         });
     });
 
     this.initMap();
 
     this.restaurant = null;
+
     this.getRestaurantFromDB()
       .then(() => this.getReviewsFromDB())
-      .then(() => DataPersister.persistSavePending())
-      .then(() => console.log('All pending data are saved'))
+      .then(() => {
+        this.worker = new Worker('scripts/worker.js');
+        this.worker.onmessage = (e) => {
+          this.getRestaurantFromDB()
+            .then(() => this.getReviewsFromDB());
+        };
+        this.worker.postMessage('start');
+      })
       .then(() => this.fetchRestaurantFromNetwork())
-      .then(() => this.fetchReviewsFromNetwork())
-      .then(() => this.getRestaurantFromDB())
-      .then(() => this.getReviewsFromDB());
+      .then(() => this.fetchReviewsFromNetwork());
   }
 
-  init(restaurant) {
-    this.restaurant = restaurant;
-    this.initMap(restaurant);
+  setRestaurant(restaurant) {
+    this.centerMap(restaurant);
+    this.fillBreadcrumb(restaurant);
+    this.restoMap.mapMarkerForRestaurant(restaurant);
+    this.fillRestaurantHTML(restaurant);
   }
 
   initMap() {
@@ -60,13 +70,15 @@ class RestaurantHelper {
    * @returns {Promise<Restaurant>}
    */
   getRestaurantFromDB() {
-    console.log('Fetch restaurant data from IDB');
     return this.db.getRestaurantsById(this.id)
       .then(restaurant => {
-        this.centerMap(restaurant);
-        this.fillBreadcrumb(restaurant);
-        this.restoMap.mapMarkerForRestaurant(restaurant);
-        this.fillRestaurantHTML(restaurant);
+        console.log('Fetch restaurant data from IDB');
+        if (restaurant == null) {
+          // No restaurant having this 'id' in IDB
+          console.log('>> No restaurant having this "id" in IDB');
+          return restaurant;
+        }
+        this.setRestaurant(restaurant);
         return restaurant;
       });
   }
@@ -76,11 +88,11 @@ class RestaurantHelper {
    * @return {Promise<restaurant>}
    */
   fetchRestaurantFromNetwork() {
-    console.log('Fetch restaurant information than save them in IDB');
     return RestaurantFetch.fetchRestaurant(this.id)
       .then(restaurant => {
-        console.log('fetch restaurant from network and saving data');
+        console.log('Fetch restaurant from network and saving data');
         this.db.saveRestaurant(restaurant);
+        this.setRestaurant(restaurant);
         return restaurant;
       });
   }
@@ -90,10 +102,10 @@ class RestaurantHelper {
    * @returns {Promise<Review>}
    */
   getReviewsFromDB() {
-    console.log('Fetch Reviews data from IDB');
     return this.db.getAllReviews(this.id)
       .then(reviews => {
-        console.log(`fetched ${reviews.length} reviews from idb`);
+        console.log('Fetch Reviews data from IDB');
+        console.log(`>> Fetched ${reviews.length} reviews from idb`);
         this.fillReviewsHTML(reviews);
         return reviews;
       });
@@ -104,24 +116,23 @@ class RestaurantHelper {
    * @return {Promise<Review[]>}
    */
   fetchReviewsFromNetwork() {
-    console.log('Fetch reviews informations from Network and save the data to IDB');
     return RestaurantFetch.fetchRestaurantReviews(this.id)
       .then(reviews => {
+        console.log('Fetch reviews informations from Network and saving the data to IDB');
         this.db.saveReviews(reviews);
+        this.fillReviewsHTML(reviews);
         return reviews;
       });
   }
-
-  /**
-   * Get current restaurant from page URL.
-   */
-  fetchRestaurantFromURL() { }
 
   /**
    * Add restaurant name to the breadcrumb navigation menu
    */
   fillBreadcrumb(restaurant) {
     const breadcrumb = document.getElementById('breadcrumb');
+    breadcrumb.innerHTML = `<li>
+    <a href="/">Home</a>
+  </li>`;
     const li = document.createElement('li');
     li.innerHTML = restaurant.name;
     breadcrumb.appendChild(li);
@@ -181,7 +192,7 @@ class RestaurantHelper {
     addBtn.onclick = this.reviewDlg.showDialog.bind(this.reviewDlg);
     divEl.appendChild(addBtn);
 
-    if (!reviews) {
+    if (reviews.length == 0) {
       const noReviews = document.createElement('p');
       noReviews.innerHTML = 'No reviews yet!';
       container.appendChild(noReviews);
@@ -207,7 +218,9 @@ class RestaurantHelper {
 
     /* changes mades by me */
     const figure = document.getElementById('restaurant-img');
-    figure.removeAttribute('id');
+    figure.innerHTML = `<picture></picture>
+    <figcaption id="restaurant-cuisine"></figcaption>`;
+    // figure.removeAttribute('id');
     const picture = figure.getElementsByTagName('picture')[0];
 
     const imageSrc = DBHelper.imageUrlForRestaurant(restaurant);
@@ -220,15 +233,10 @@ class RestaurantHelper {
     picture.appendChild(source);
 
     const image = document.createElement('img');
-    image.id = 'restaurant-img';
     image.className = 'restaurant-img';
     image.src = smallImageSrc;
     image.setAttribute('alt', 'Image of ' + restaurant.name + ' Restaurant');
     picture.appendChild(image);
-
-    //const image = document.getElementById('restaurant-img');
-    //image.className = 'restaurant-img'
-    //image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
     const cuisine = document.getElementById('restaurant-cuisine');
     cuisine.innerHTML = restaurant.cuisine_type;
@@ -244,6 +252,7 @@ class RestaurantHelper {
    */
   fillRestaurantHoursHTML(operatingHours) {
     const hours = document.getElementById('restaurant-hours');
+    hours.innerHTML = '';
     for (let key in operatingHours) {
       const row = document.createElement('tr');
 

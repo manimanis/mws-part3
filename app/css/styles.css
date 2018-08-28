@@ -288,6 +288,10 @@ nav h1 a {
   width: 100%;
 }
 
+.restaurant-img {
+  width: 100%;
+}
+
 #restaurant-address {
   font-size: 12pt;
   margin: 10px 0px;

@@ -103,7 +103,9 @@ class RestaurantFetch {
     return fetch(RestaurantFetch.REVIEWS_URL + `/${review.id}`, {
       method: 'PUT',
       body: bodyData
-    });
+    })
+      .then(response => response.json())
+      .then(review => new Review(review));;
   }
 
   /**
@@ -124,7 +126,9 @@ class RestaurantFetch {
   static favoriteRestaurant(restaurant_id, is_favorite) {
     return fetch(RestaurantFetch.RESTAURANTS_URL + `/${restaurant_id}/?is_favorite=${is_favorite}`, {
       method: 'PUT'
-    });
+    })
+      .then(response => response.json())
+      .then(restaurant => new Restaurant(restaurant));
   }
 
   /**

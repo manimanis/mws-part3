@@ -154,9 +154,11 @@ class MainHelper {
 
       // If we cannot un/favorite a restaurant we add it to the pending queue
       RestaurantFetch.favoriteRestaurant(restaurant.id, restaurant.is_favorite)
+        .then(() => thisObj.restDB.saveRestaurant(restaurant))
         .then(() => console.log(`Restaurant ${restaurant.name} ` + (restaurant.is_favorite ? 'is favorite' : 'is unfavorite')))
         .catch(error => {
           console.log('Could not un/favorite restaurant', error);
+          thisObj.restDB.saveRestaurant(restaurant);
           thisObj.restDB.addToPendingQueue(restaurant);
         });
     };

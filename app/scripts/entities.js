@@ -29,6 +29,113 @@ class Restaurant {
     this.createdAt = DateUtility.toDate(obj.createdAt);
     this.updatedAt = DateUtility.toDate(obj.updatedAt);
     this.is_favorite = obj.is_favorite === true || obj.is_favorite === 'true';
+    this._calcHash();
+  }
+
+  getId() {
+    return this.name;
+  }
+
+  setName(id) {
+    this.id = id;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  setName(name) {
+    this.name = name;
+    this._calcHash();
+  }
+
+  getNeighborhood() {
+    return this.neighborhood;
+  }
+
+  setNeighborhood(neighborhood) {
+    this.neighborhood = neighborhood;
+    this._calcHash();
+  }
+
+  getPhotograph() {
+    return this.photograph;
+  }
+
+  setPhotograph(photograph) {
+    this.photograph = photograph;
+  }
+
+  getAddress() {
+    return this.address;
+  }
+
+  setAddress(address) {
+    this.address = address;
+    this._calcHash();
+  }
+
+  getLatLng() {
+    return this.latlng;
+  }
+
+  setLatLng(latlng) {
+    this.latlng = latlng;
+    this._calcHash();
+  }
+
+  getCuisineType() {
+    return this.cuisine_type;
+  }
+
+  setCuisineType(cuisine_type) {
+    this.cuisine_type = cuisine_type;
+    this._calcHash();
+  }
+  getOperatingHours() {
+    return this.operating_hours;
+  }
+
+  setOperatingHours(operating_hours) {
+    this.operating_hours = operating_hours;
+  }
+
+  getCreatedAt() {
+    return this.createdAt;
+  }
+
+  setCreatedAt(createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  getUpdatedAt() {
+    return this.updatedAt;
+  }
+
+  setUpdatedAt(updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  isFavorite() {
+    return this.is_favorite;
+  }
+
+  setFavorite(is_favorite) {
+    this.is_favorite = is_favorite;
+  }
+
+  getHash() {
+    return this.hash;
+  }
+
+  _calcHash() {
+    this.hash = MD5.hash(JSON.stringify({
+      name: this.name,
+      neighborhood: this.neighborhood,
+      address: this.address,
+      latlng: this.latlng,
+      cuisine_type: this.cuisine_type
+    }));
   }
 }
 
@@ -41,6 +148,80 @@ class Review {
     this.updatedAt = DateUtility.toDate(obj.updatedAt);
     this.rating = parseInt(obj.rating) || 0;
     this.comments = obj.comments || '';
+    this._calcHash();
+  }
+
+  getId() {
+    return this.id;
+  }
+
+  setId(id) {
+    this.id = id;
+  }
+
+  getRestaurantId() {
+    return this.restaurant_id;
+  }
+
+  setRestaurantId(restaurant_id) {
+    this.restaurant_id = restaurant_id;
+    this._calcHash();
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  setName(name) {
+    this.name = name;
+    this._calcHash();
+  }
+
+  getCreatedAt() {
+    return this.createdAt;
+  }
+
+  setCreatedAt(createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  getUpdatedAt() {
+    return this.updatedAt;
+  }
+
+  setUpdatedAt(updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  getRating() {
+    return this.rating;
+  }
+
+  setRating(rating) {
+    this.rating = rating;
+    this._calcHash();
+  }
+
+  getComments() {
+    return this.comments;
+  }
+
+  setComments(comments) {
+    this.comments = comments;
+    this._calcHash();
+  }
+
+  getHash() {
+    return this.hash;
+  }
+
+  _calcHash() {
+    this.hash = MD5.hash(JSON.stringify({
+      name: this.name,
+      restaurant_id: this.restaurant_id,
+      rating: this.rating,
+      comments: this.comments
+    }));
   }
 }
 

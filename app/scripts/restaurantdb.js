@@ -1,6 +1,6 @@
 class RestaurantsDB {
   static get DB_NAME() {
-    return 'restaurants_v2';
+    return 'restaurants_store';
   }
 
   static get RESTAURANTS_STORE() {
@@ -11,12 +11,8 @@ class RestaurantsDB {
     return 'reviews';
   }
 
-  static get CUISINE_TYPE_INDEX() {
-    return 'cuisine_type';
-  }
-
-  static get NEIGHBORHOOD_INDEX() {
-    return 'neighborhood';
+  static get ID_INDEX() {
+    return 'id';
   }
 
   static get RESTAURANT_ID_INDEX() {
@@ -32,16 +28,16 @@ class RestaurantsDB {
   }
 
   constructor() {
-    this._promiseDB = idb.open(RestaurantsDB.DB_NAME, 3, (db) => {
+    this._promiseDB = idb.open(RestaurantsDB.DB_NAME, 1, (db) => {
       console.log('create data store');
       if (!db.objectStoreNames.contains(RestaurantsDB.RESTAURANTS_STORE)) {
-        const os = db.createObjectStore(RestaurantsDB.RESTAURANTS_STORE, { keyPath: 'id' });
-        os.createIndex(RestaurantsDB.CUISINE_TYPE_INDEX, RestaurantsDB.CUISINE_TYPE_INDEX);
-        os.createIndex(RestaurantsDB.NEIGHBORHOOD_INDEX, RestaurantsDB.NEIGHBORHOOD_INDEX);
+        const os = db.createObjectStore(RestaurantsDB.RESTAURANTS_STORE, { keyPath: 'hash' });
+        os.createIndex(RestaurantsDB.ID_INDEX, RestaurantsDB.ID_INDEX);
       }
 
       if (!db.objectStoreNames.contains(RestaurantsDB.REVIEWS_STORE)) {
-        const os = db.createObjectStore(RestaurantsDB.REVIEWS_STORE, { keyPath: 'id' });
+        const os = db.createObjectStore(RestaurantsDB.REVIEWS_STORE, { keyPath: 'hash' });
+        os.createIndex(RestaurantsDB.ID_INDEX, RestaurantsDB.ID_INDEX);
         os.createIndex(RestaurantsDB.RESTAURANT_ID_INDEX, RestaurantsDB.RESTAURANT_ID_INDEX);
       }
 
@@ -84,10 +80,10 @@ class RestaurantsDB {
     let objStore = null, objKey = null, objVal = null;
     if (object instanceof Restaurant) {
       objStore = RestaurantsDB.PENDING_SAVE_RESTOS;
-      objKey = `Resto${object.id}`;
+      objKey = object.getHash();
       objVal = object;
     } else if (object instanceof Review) {
-      objKey = `${object.restaurant_id}${object.name}${object.comments}`;
+      objKey = object.getHash();
       objStore = RestaurantsDB.PENDING_SAVE_REVIEWS;
       objVal = object;
     }
@@ -129,7 +125,8 @@ class RestaurantsDB {
     return this._promiseDB.then((db) => {
       const tx = db.transaction(RestaurantsDB.RESTAURANTS_STORE);
       const objStore = tx.objectStore(RestaurantsDB.RESTAURANTS_STORE);
-      return objStore.getAll(null);
+      return objStore.index(RestaurantsDB.ID_INDEX)
+        .getAll(null);
     })
       .catch(error => console.log('getAll()', error));
   }
@@ -157,7 +154,12 @@ class RestaurantsDB {
     return this._promiseDB.then((db) => {
       return db.transaction(RestaurantsDB.RESTAURANTS_STORE)
         .objectStore(RestaurantsDB.RESTAURANTS_STORE)
-        .get(id);
+        .index(RestaurantsDB.ID_INDEX)
+        .get(id)
+        .then(restaurant => {
+          if (!restaurant) return null;
+          return new Restaurant(restaurant);
+        });
     });
   }
 

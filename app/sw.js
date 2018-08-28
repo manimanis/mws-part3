@@ -91,20 +91,15 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // All others requests fetch from the cache than from the network
-  // event.respondWith(
-  //   caches.open(siteCacheName).then((cache) => {
-  //     return cache.match(event.request).then((response) => {
-  //       return response || fetch(event.request);
-  //     });
-  //   })
-  // );
-
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
     })
   );
+});
+
+self.addEventListener('activate', function (event) {
+
 });
 
 /**
