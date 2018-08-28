@@ -17,7 +17,7 @@ var internalResources = [
   // stylesheets
   'css/styles.css',
   'css/responsive.css',
-  'css/all.min.css'
+  // 'css/all.min.css'
 ];
 
 // External resources are not located on localhost
@@ -56,10 +56,11 @@ self.addEventListener('install', function (event) {
               const availableResources = keys.map(request => request.url)
                 .filter(url => externalResources.includes(url));
               if (availableResources.length === externalResources.length) {
-                console.log('sw install - external resources are in the cache, try to load internal resources');
-                return cache.addAll(internalResources);
+                console.log('sw install - external resources are in the cache');
               }
-              return Promise.reject("Minimal resources are not availables");
+              console.log('trying to load internal resources');
+              return cache.addAll(internalResources);
+              // return Promise.reject("Minimal resources are not availables");
             });
         });
     })

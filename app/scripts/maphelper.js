@@ -1,5 +1,6 @@
 class MapHelper {
   constructor() {
+    this.restoMap = null;
     this.markers = [];
   }
 
@@ -9,6 +10,11 @@ class MapHelper {
   initMap(coordinates) {
     if (!coordinates) {
       coordinates = [40.722216, -73.987501];
+    }
+
+    // Leaflet not loaded
+    if (!window.L) {
+      return;
     }
     
     this.restoMap = L.map('map', {
@@ -33,6 +39,10 @@ class MapHelper {
    * @param {array} coordinates 
    */
   centerMap(coordinates) {
+    if (!this.restoMap) {
+      return;
+    }
+
     this.restoMap.setView(coordinates);
   }
 
@@ -40,6 +50,10 @@ class MapHelper {
   * Map marker for a restaurant.
   */
   mapMarkerForRestaurant(restaurant) {
+    if (!this.restoMap) {
+      return;
+    }
+
     // https://leafletjs.com/reference-1.3.0.html#marker  
     const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
       {
@@ -57,6 +71,10 @@ class MapHelper {
    * Add markers for current restaurants to the map.
    */
   addMarkersToMap(restaurants) {
+    if (!this.restoMap) {
+      return;
+    }
+
     restaurants.forEach(restaurant => {
       // Add marker to the map
       const marker = this.mapMarkerForRestaurant(restaurant);
@@ -72,6 +90,10 @@ class MapHelper {
    * Remove markers
    */
   removeMarkers() {
+    if (!this.restoMap) {
+      return;
+    }
+
     // Remove all map markers
     if (this.markers) {
       this.markers.forEach(marker => marker.remove());

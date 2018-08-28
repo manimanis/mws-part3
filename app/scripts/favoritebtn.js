@@ -19,7 +19,7 @@ class FavoriteBtn {
     this.restaurant.is_favorite = favorite;
     this.el.setAttribute('aria-checked', favorite);
     this.el.setAttribute('aria-label', (favorite) ? 'Unfavorite Restaurant ' + this.restaurant.name : 'Favorite Restaurant ' + this.restaurant.name);
-    this.el.innerHTML = '<i class="fas fa-heart"></i>';
+    this.el.innerHTML = '❤';
     this.el.href = '#';
     if (favorite) {
       this.el.className = 'is_favorite';

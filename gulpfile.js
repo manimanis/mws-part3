@@ -35,8 +35,9 @@ gulp.task('webworker-scripts', () => {
     .pipe($.plumber())
     .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
+    .pipe($.uglify())
     .pipe(concat('worker.bundle.js'))
-    .pipe($.if(dev, $.sourcemaps.write('.')))
+    .pipe($.if(dev, $.sourcemaps.write('.')))    
     .pipe(gulp.dest('.tmp/scripts'))
     .pipe(reload({ stream: true }));
 });
@@ -58,6 +59,7 @@ gulp.task('main-scripts', () => {
     .pipe($.plumber())
     .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
+    .pipe($.uglify())
     .pipe(concat('main.bundle.js'))
     .pipe($.if(dev, $.sourcemaps.write('.')))
     .pipe(gulp.dest('.tmp/scripts'))
@@ -82,6 +84,7 @@ gulp.task('restaurant-scripts', () => {
     .pipe($.plumber())
     .pipe($.if(dev, $.sourcemaps.init()))
     .pipe($.babel())
+    .pipe($.uglify())
     .pipe(concat('restaurant.bundle.js'))
     .pipe($.if(dev, $.sourcemaps.write('.')))
     .pipe(gulp.dest('.tmp/scripts'))

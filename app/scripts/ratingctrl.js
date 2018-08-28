@@ -39,10 +39,13 @@ class RatingControl {
     this.el.innerHTML = '';
     this.el.setAttribute('aria-label', 'rating ' + this.rating + ' stars');
     this.el.setAttribute('class', 'rating stars_' + this.rating);
+    let starsStr = '';
     for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.setAttribute('class', (i > this.rating) ? 'far fa-star' : 'fas fa-star');
-      this.el.appendChild(star);
+//      const star = document.createElement('span');
+      starsStr += (i <= this.rating) ? '★' : '☆';
+      // star.setAttribute('class', (i > this.rating) ? 'far fa-star' : 'fas fa-star');
+      // this.el.appendChild(star);
     }
+    this.el.innerHTML = starsStr;
   }
 }
