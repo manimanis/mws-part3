@@ -28,7 +28,7 @@ class RestaurantFetch {
   static fetchRestaurants() {
     return fetch(RestaurantFetch.RESTAURANTS_URL)
       .then(response => response.json())
-      .then(restaurants => restaurants.map(restaurant => new Restaurant(restaurant)));
+      .then(restaurants => new RestaurantCollection(restaurants));
   }
 
   /**

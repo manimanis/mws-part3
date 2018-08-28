@@ -4,7 +4,15 @@ class MainHelper {
     this.restoMap = new MapHelper();
 
     this.initMap();
-    this.fetchRestaurants();
+    this.getRestaurantsFromDB()
+      .then(() => {
+        this.worker = new Worker('scripts/worker.js');
+        this.worker.onmessage = (e) => {
+          this.getRestaurantsFromDB();
+        };
+        this.worker.postMessage('start');
+      })
+      .then(() => this.fetchRestaurantsFromNetwork());
   }
 
   /**
@@ -15,35 +23,37 @@ class MainHelper {
   }
 
   /**
-   * Fetch restaurants from IDB first then try to fetch from network
+   * Fetch restaurants from IDB
    */
-  fetchRestaurants() {
-    this.restDB.getAllRestaurants()
-      .then(idb_restaurants => {
-        this.restaurants = new RestaurantCollection(idb_restaurants);
-
-        this.fetchNeighborhoods();
-        this.fetchCuisines();
-        this.updateRestaurants();
-
-        DataPersister.persistSavePending()
-          .then(() => {
-            console.log('Pending data saved successfully');
-
-            // Fetch restaurants from network
-            RestaurantFetch.fetchRestaurants()
-              .then(restaurants => {
-                this.restaurants = new RestaurantCollection(restaurants);
-
-                this.restDB.saveRestaurants(this.restaurants);
-
-                this.fetchNeighborhoods();
-                this.fetchCuisines();
-                this.updateRestaurants();
-              });
-          })
-          .catch(() => console.log('Cannot save pending data'));
+  getRestaurantsFromDB() {
+    return this.restDB.getAllRestaurants()
+      .then(restaurants => {
+        console.log('Fetched restaurants data from IDB');
+        this.setRestaurants(restaurants);
       });
+  }
+
+  /**
+   * Fetch restaurants from Network
+   */
+  fetchRestaurantsFromNetwork() {
+    return RestaurantFetch.fetchRestaurants()
+      .then(restaurants => {
+        console.log('Fetched restaurants data from Network');
+        this.restDB.saveRestaurants(restaurants);
+        this.setRestaurants(restaurants);
+      });
+  }
+
+  /**
+   * Update the page with this collection of restaurants
+   * @param {RestaurantCollection} restaurants 
+   */
+  setRestaurants(restaurants) {
+    this.restaurants = restaurants;
+    this.fillNeighborhoodsHTML(this.restaurants.getNeighborhoods());
+    this.fillCuisinesHTML(this.restaurants.getCuisines());
+    this.updateRestaurants();
   }
 
   /**
@@ -160,6 +170,9 @@ class MainHelper {
           console.log('Could not un/favorite restaurant', error);
           thisObj.restDB.saveRestaurant(restaurant);
           thisObj.restDB.addToPendingQueue(restaurant);
+
+          // relay the task to the worker
+          thisObj.worker.postMessage('start');
         });
     };
   }

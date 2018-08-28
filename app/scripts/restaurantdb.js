@@ -128,6 +128,7 @@ class RestaurantsDB {
       return objStore.index(RestaurantsDB.ID_INDEX)
         .getAll(null);
     })
+      .then(restaurants => new RestaurantCollection(restaurants))
       .catch(error => console.log('getAll()', error));
   }
 
