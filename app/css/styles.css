@@ -2,6 +2,18 @@
 
 /* CSS Document */
 
+@font-face {
+  font-family: 'Roboto';
+  font-display: fallback;
+  src: local('Roboto'), url(https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Merienda';
+  font-display: fallback;
+  src: local('Merienda'), url(https://fonts.gstatic.com/s/merienda/v5/gNMHW3x8Qoy5_mf8uWMFMIo.woff2) format('woff2');
+}
+
 body, td, th, p {
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   font-size: 10pt;
@@ -58,7 +70,8 @@ figure {
 
 #footer {
   background-color: #444;
-  color: #aaa;
+  /* color: #aaa; */
+  color: #fff;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 4em 0;
@@ -209,7 +222,8 @@ nav h1 a {
 }
 
 #restaurants-list li h2 {
-  color: #f18200;
+  /* color: #f18200; */
+  color: #8c4b00;
   font-family: "Roboto", Arial, sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -227,7 +241,7 @@ nav h1 a {
 #restaurants-list li a.view-details {
   background-color: orange;
   border-bottom: 3px solid #eee;
-  color: #fff;
+  color: #2d2d2d; /*#fff;*/
   display: block;
   font-size: 10pt;
   margin: 15px 0 0;
@@ -512,7 +526,8 @@ a.skip-main:focus, a.skip-main:active {
   width: 24px;
   height: 24px;
   font-size: 24px;
-  color: lightgray;
+  /* color: lightgray; */
+  color: #757575;
   padding: 8px;
   background-color: #fff;
   border-radius: 50%;

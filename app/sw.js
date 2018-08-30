@@ -31,9 +31,9 @@ var externalResources = [
   'https://fonts.googleapis.com/css?family=Roboto',
   'https://fonts.googleapis.com/css?family=Merienda',
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
-  // // fonts
-  // 'https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxK.woff2',
-  // 'https://fonts.gstatic.com/s/merienda/v5/gNMHW3x8Qoy5_mf8uWMFMIo.woff2',
+  // fonts
+  'https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxK.woff2',
+  'https://fonts.gstatic.com/s/merienda/v5/gNMHW3x8Qoy5_mf8uWMFMIo.woff2',
   // 'https://use.fontawesome.com/releases/v5.1.1/webfonts/fa-solid-900.woff2',
   // 'https://use.fontawesome.com/releases/v5.1.1/webfonts/fa-regular-400.woff2'
 ];
@@ -80,6 +80,7 @@ self.addEventListener('fetch', function (event) {
 
   // matches all the requests to jpg images
   if (requestUrl.pathname.endsWith('.jpg') ||
+    requestUrl.pathname.endsWith('.png') ||
     // matches all the requests to web fonts
     requestUrl.pathname.endsWith('.woff2') ||
     requestUrl.pathname.endsWith('.woff') ||

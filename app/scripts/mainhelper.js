@@ -5,7 +5,7 @@ class MainHelper {
 
     // Prepare image lazy load
     if ('IntersectionObserver' in window) {
-      this.observer = new IntersectionObserver(this.onIntersection.bind(this), {threshold: 0.01});
+      this.observer = new IntersectionObserver(this.onIntersection.bind(this), { threshold: 0.01 });
     }
 
     this.initMap();
@@ -25,6 +25,9 @@ class MainHelper {
    */
   initMap() {
     this.restoMap.initMap();
+    if (this.restaurants) {
+      this.addMarkersToMap(this.restaurants.getAll());
+    }
   }
 
   /**
@@ -180,17 +183,17 @@ class MainHelper {
     if (!src) {
       return;
     }
-    
+
     return new Promise((resolve, reject) => {
       const img = document.createElement('img');
       img.setAttribute(srcAttr, src);
       img.onload = resolve;
       img.onerror = reject;
     })
-    .then(() => {
-      image.setAttribute(srcAttr, src);
-    })
-    .catch(error => console.log('error: ', error));
+      .then(() => {
+        image.setAttribute(srcAttr, src);
+      })
+      .catch(error => console.log('error: ', error));
   }
 
   /**
@@ -276,7 +279,7 @@ class MainHelper {
 }
 
 // window.addEventListener('load', function() {
-  window.mainHelper = new MainHelper();
+window.mainHelper = new MainHelper();
 // });
 
 
