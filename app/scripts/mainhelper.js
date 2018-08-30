@@ -3,6 +3,11 @@ class MainHelper {
     this.restDB = new RestaurantsDB();
     this.restoMap = new MapHelper();
 
+    // Prepare image lazy load
+    if ('IntersectionObserver' in window) {
+      this.observer = new IntersectionObserver(this.onIntersection.bind(this), {threshold: 0.01});
+    }
+
     this.initMap();
     this.getRestaurantsFromDB()
       .then(() => {
@@ -120,13 +125,17 @@ class MainHelper {
     const smallImageSrc = imageSrc.replace('.jpg', '-small.jpg');
 
     const source = document.createElement('source');
-    source.setAttribute('srcset', largeImageSrc + ' 2x,' + normalImageSrc + ' 1x');
+    source.className = 'restaurant-img-lazy';
+    source.setAttribute('srcset', '');
+    source.setAttribute('data-srcset', largeImageSrc + ' 2x,' + normalImageSrc + ' 1x');
     picture.appendChild(source);
 
     const image = document.createElement('img');
     image.className = 'restaurant-img';
-    image.src = smallImageSrc;
+    image.src = 'img/resto.svg';
+    image.setAttribute('data-src', smallImageSrc);
     image.setAttribute('alt', 'Image of ' + restaurant.name + ' Restaurant');
+    this.observer.observe(image);
     picture.appendChild(image);
 
     const name = document.createElement('h2');
@@ -148,6 +157,40 @@ class MainHelper {
     li.append(more);
 
     return li;
+  }
+
+  onIntersection(entries) {
+    entries.forEach(entry => {
+      if (entry.intersectionRatio > 0) {
+        const sourceEl = entry.target.parentElement.querySelector('.restaurant-img-lazy');
+
+        this.observer.unobserve(entry.target);
+
+        this.lazyLoadImage(sourceEl);
+        this.lazyLoadImage(entry.target);
+      }
+    });
+  }
+
+  lazyLoadImage(image) {
+    const typeImage = image.tagName;
+    const srcAttr = (typeImage == 'IMG') ? 'src' : 'srcset';
+    const src = image.dataset[srcAttr];
+    image.removeAttribute('data-' + srcAttr);
+    if (!src) {
+      return;
+    }
+    
+    return new Promise((resolve, reject) => {
+      const img = document.createElement('img');
+      img.setAttribute(srcAttr, src);
+      img.onload = resolve;
+      img.onerror = reject;
+    })
+    .then(() => {
+      image.setAttribute(srcAttr, src);
+    })
+    .catch(error => console.log('error: ', error));
   }
 
   /**
@@ -232,7 +275,9 @@ class MainHelper {
 
 }
 
-window.mainHelper = new MainHelper();
+// window.addEventListener('load', function() {
+  window.mainHelper = new MainHelper();
+// });
 
 
 

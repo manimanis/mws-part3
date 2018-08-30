@@ -11,6 +11,7 @@ var internalResources = [
   // javascript
   'register_sw.js',
   'scripts/worker.js',
+  'scripts/worker.main.js',
   'scripts/main.bundle.js',
   'scripts/restaurant.bundle.js',
   'scripts/worker.bundle.js',

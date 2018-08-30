@@ -5,63 +5,197 @@
   <meta charset="utf-8">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#317efb"/>
+  <meta name="theme-color" content="#317efb" />
 
   <link rel="manifest" href="/manifest.json">
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Merienda" rel="stylesheet">
+  <link data-href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link data-href="https://fonts.googleapis.com/css?family=Merienda" rel="stylesheet">
 
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <!-- <link rel="stylesheet" href="css/all.min.css"> -->
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="">  
+  <link rel="stylesheet" data-href="/css/styles.css">
+  <link rel="stylesheet" data-href="/css/responsive.css">
+  <link rel="stylesheet" data-href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+    crossorigin="">
   <title>Restaurant Reviews</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #preload {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #preload-img {
+      background: transparent url(img/resto.svg) no-repeat 50% 50%;
+      background-size: contain;
+      width: calc(800px / 3);
+      height: 200px;
+    }
+
+    #progress {
+      position: relative;
+      width: 200px;
+      height: 2px;
+      background-color: #edbaaa;
+      margin-top: 20px;
+    }
+
+    #progress-animation {
+      /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+      animation: progressanimation infinite linear 4s;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 2px;
+      background-color: #b54324;
+    }
+
+    #page-content {
+      display: none;
+      border: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    @keyframes progressanimation {
+      from {
+        left: 0;
+      }
+      to {
+        left: 180px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <a class="skip-main" href="#maincontent">Skip to main content</a>
+  <div id="preload">
+    Loading...
+    <div id="preload-img"></div>
+    <div id="progress">
+      <div id="progress-animation"></div>
+    </div>
+  </div>
 
-  <header>
-    <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
-  </header>
+  <div id="page-content">
+    <a class="skip-main" href="#maincontent">Skip to main content</a>
 
-  <main id="maincontent" role="application">
-    <section id="map-container" aria-owns="map" tabindex="-1">
-      <div id="map" role="application" aria-label="Map with restaurants"><div id="map-loader"></div></div>
-    </section>
-    <section>
-      <div class="filter-options">
-        <h2>Filter Results</h2>
-        <div class="form-control">
-          <label for="neighborhoods-select">Select Neighborhood</label>
-          <select id="neighborhoods-select" name="neighborhoods" onchange="mainHelper.updateRestaurants()">
-            <option value="all">All Neighborhoods</option>
-          </select>
+    <header>
+      <nav>
+        <h1><a href="/">Restaurant Reviews</a></h1>
+      </nav>
+    </header>
+
+    <main id="maincontent" role="application">
+      <section id="map-container" aria-owns="map" tabindex="-1">
+        <div id="map" role="application" aria-label="Map with restaurants"></div>
+      </section>
+      <section>
+        <div class="filter-options">
+          <h2>Filter Results</h2>
+          <div class="form-control">
+            <label for="neighborhoods-select">Select Neighborhood</label>
+            <select id="neighborhoods-select" name="neighborhoods" onchange="mainHelper.updateRestaurants()">
+              <option value="all">All Neighborhoods</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label for="cuisines-select">Select Cuisine</label>
+            <select id="cuisines-select" name="cuisines" onchange="mainHelper.updateRestaurants()">
+              <option value="all">All Cuisines</option>
+            </select>
+          </div>
         </div>
-        <div class="form-control">
-          <label for="cuisines-select">Select Cuisine</label>
-          <select id="cuisines-select" name="cuisines" onchange="mainHelper.updateRestaurants()">
-            <option value="all">All Cuisines</option>
-          </select>
-        </div>
-      </div>
-      <ul id="restaurants-list"><li><div id="loading-resto"><div></div><div></div><div></div></div></div></li></ul>
-    </section>
-  </main>
-  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>  
-  <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap"></script> -->
+        <ul id="restaurants-list">
+          <li>
+            <div id="loading-resto">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+    <script data-src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+      crossorigin=""></script>
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap"></script> -->
 
 
-  <footer id="footer">
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
-  </footer>
+    <footer id="footer">
+      Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    </footer>
 
-  <script src="scripts/main.bundle.js"></script>
-  <script src="register_sw.js"></script>
+    <script data-src="/scripts/main.bundle.js"></script>
+    <script src="register_sw.js"></script>
+  </div>
+
+  <script>
+    const asyncCSS = Array.prototype.slice.apply(document.querySelectorAll('[data-href]'));
+    const cssLinks = asyncCSS.map((link, index) => {
+      return { "index": index, "href": link.dataset.href };
+    });
+
+    const asyncJS = Array.prototype.slice.apply(document.querySelectorAll('script[data-src]'));
+    const jsLinks = asyncJS.map((link, index) => {
+      return { "index": index, "href": link.dataset.src };
+    });
+
+    let resCount = jsLinks.length + cssLinks.length;
+
+    const worker = new Worker('scripts/worker.main.js');
+    worker.onmessage = (e) => {
+      const data = e.data;
+      if (data.type == 'css') {
+        if (data.data) {
+          asyncCSS[data.index].href = data.data;
+        }
+      }
+      if (data.type == 'js') {
+        if (data.data) {
+          asyncJS[data.index].src = data.data;
+        }
+      }
+      resCount--;
+      if (resCount == 0) {
+        setTimeout(() => {
+          const pageContent = document.querySelector('#page-content');
+          const preload = document.querySelector('#preload');
+          preload.style.display = 'none';
+          pageContent.style.display = 'block';
+        }, 2000);
+      }
+    };
+    worker.postMessage({
+      css: cssLinks,
+      js: jsLinks
+    });
+    // asyncCSS.forEach(link => {
+    //   const src = link.dataset.href;
+    //   fetch(src)
+    //     .then(response => response.blob())
+    //     .then(href => link.href = URL.createObjectURL(href));
+    // });
+
+    // const asyncJS = document.querySelectorAll('script[data-src]');
+    // asyncJS.forEach(jsf => {
+    //   const src = jsf.dataset.src;
+    //   fetch(src)
+    //     .then(response => response.blob())
+    //     .then(src => jsf.src = URL.createObjectURL(src));
+    // });
+  </script>
 </body>
 
 </html>

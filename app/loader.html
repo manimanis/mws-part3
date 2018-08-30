@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Reviews</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #preload {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #preload-img {
+      background: transparent url(img/resto.svg) no-repeat 50% 50%;
+      background-size: contain;
+      width: calc(800px / 3);
+      height: 200px;
+    }
+
+    #progress {
+      position: relative;
+      width: 200px;
+      height: 2px;
+      background-color: #edbaaa;
+      margin-top: 20px;
+    }
+
+    #progress-animation {
+      /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+      animation: progressanimation infinite linear 4s;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 2px;
+      background-color: #b54324;
+    }
+
+    #preload-content {
+      display: none;
+      border: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    @keyframes progressanimation {
+      from {
+        left: 0;
+      }
+      to {
+        left: 180px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="preload">
+    <div id="preload-img"></div>
+    <div id="progress">
+      <div id="progress-animation"></div>
+    </div>
+  </div>
+
+  <iframe id="preload-content"></iframe>
+
+  <div id="liste"></div>
+  <script>
+    //const worker = new Worker('scripts/preload.worker.js');
+    const preloadContent = document.querySelector('#preload-content');
+    const preload = document.querySelector('#preload');
+
+    /**
+     * Get a parameter by name from page URL.
+     */
+    function getParameterByName(name, url) {
+      if (!url) {
+        url = window.location.href;
+      }
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
+        results = regex.exec(url);
+      if (!results) {
+        return '';
+      }
+      if (!results[2]) {
+        return '';
+      }
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    let page = getParameterByName('page');
+    if (page == '' || page == 'index') {
+      page = '/index-page.html'
+    } else if (page == 'restaurant') {
+      const url = new URL(window.location.href);
+      page = '/restaurant.html?' + url.searchParams;
+    }
+    preloadContent.src = page;
+
+    preloadContent.onload = () => {
+      setTimeout(() => {
+        // const head = preloadContent.contentDocument.head.innerHTML;
+        // const body = preloadContent.contentDocument.body.innerHTML;
+
+        // document.head.innerHTML = head;
+        // document.body.innerHTML = body;
+
+        preloadContent.style.display = 'block';
+        preload.style.display = 'none';
+      }, 10000);
+    };
+
+    // worker.onmessage = function (e) {
+    //   //const preloadDiv = document.querySelector('#preload');
+    //   //preloadDiv.style.display = 'none';
+    // }
+    //worker.postMessage('start');
+  </script>
+</body>
+
+</html>
