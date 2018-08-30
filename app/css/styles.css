@@ -609,6 +609,7 @@ a.skip-main:focus, a.skip-main:active {
   float: right;
   font-size: 2em;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .modal-dialog .modal-title h2 {

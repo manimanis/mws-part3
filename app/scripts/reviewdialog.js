@@ -4,7 +4,7 @@ class ReviewDialog {
 
     this.el.setAttribute('aria-hidden', true);
 
-    this.closeBtn = this.el.querySelector('.modal-title > span');
+    this.closeBtn = this.el.querySelector('.modal-title > a');
     this.closeBtn.onclick = this.cancel.bind(this);
 
     this.nameEl = this.el.querySelector('#reviewer_name');
@@ -27,8 +27,8 @@ class ReviewDialog {
     this.reviewEl.onchange = this._reviewerTextChanged.bind(this);
 
     // set the dialog functions
-    this.acceptFunc = acceptFunc || function () {};
-    this.cancelFunc = cancelFunc || function () {};
+    this.acceptFunc = acceptFunc || function () { };
+    this.cancelFunc = cancelFunc || function () { };
 
     // When the user clicks outside the dialog window
     const thisObj = this;
@@ -53,11 +53,11 @@ class ReviewDialog {
       '\'': '&#x27;',
       '/': '&#x2F;'
     };
-    
+
     // Regex containing the keys listed immediately above.
     var htmlEscaper = /[&<>"'\/]/g;
 
-    return ('' + string).replace(htmlEscaper, function(match) {
+    return ('' + string).replace(htmlEscaper, function (match) {
       return htmlEscapes[match];
     });
   }
@@ -177,12 +177,51 @@ class ReviewDialog {
     return valid;
   }
 
+  _initTabKeyTrap() {
+    this.focusedElementBefore = document.activeElement;
+    this.el.addEventListener('keydown', this._trapTabKey.bind(this));
+
+    const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex="0"], [contenteditable]';
+    let focusableElements = modal.querySelectorAll(focusableElementsString);
+
+    this.focusableElements = Array.prototype.slice.call(focusableElements);
+
+    this.firstTabStop = this.focusableElements[0];
+    this.lastTabStop = this.focusableElements[focusableElements.length - 1];
+
+    this.focusableElements[1].focus();
+  }
+
+  _trapTabKey(e) {
+    const VK_TAB = 9;
+    const VK_ESC = 27;
+    if (e.keyCode === VK_TAB) {
+      if (e.shiftKey) {
+        if (document.activeElement === this.firstTabStop) {
+          e.preventDefault();
+          this.lastTabStop.focus();
+        }
+      } else {
+        if (document.activeElement === this.lastTabStop) {
+          e.preventDefault();
+          this.firstTabStop.focus();
+        }
+      }
+    }
+
+    if (e.keyCode === VK_ESC) {
+      this.cancel();
+    }
+  }
+
   /**
    * Display this dialog
    */
   showDialog() {
     this.el.setAttribute('aria-hidden', false);
     this.el.style.display = 'block';
+
+    this._initTabKeyTrap();
   }
 
   /**
@@ -191,6 +230,8 @@ class ReviewDialog {
   _close() {
     this.el.setAttribute('aria-hidden', true);
     this.el.style.display = 'none';
+
+    this.focusedElementBefore.focus();
   }
 
   /**
